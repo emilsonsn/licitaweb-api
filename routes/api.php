@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ClientController;
+use App\Http\Controllers\TenderController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 
@@ -44,10 +44,19 @@ Route::middleware('jwt')->group(function(){
         Route::post('block/{id}', [UserController::class, 'userBlock']);
     });
 
-    Route::prefix('client')->group(function(){
-        Route::get('search', [ClientController::class, 'search']);
-        Route::post('create', [ClientController::class, 'create']);
-        Route::patch('{id}', [ClientController::class, 'update']);
-        Route::delete('{id}', [ClientController::class, 'delete']);
+    Route::prefix('tender')->group(function(){
+        Route::get('all', [TenderController::class, 'all']);
+        Route::get('search', [TenderController::class, 'search']);
+        Route::post('create', [TenderController::class, 'create']);
+
+        Route::delete('attachment/{attachmentId}', [TenderController::class, 'deleteAttachment']);
+        Route::delete('item/{itemId}', [TenderController::class, 'deleteItem']);
+        Route::delete('task/{taskId}', [TenderController::class, 'deleteTask']);
+
+        Route::patch('{tender_id}/status', [TenderController::class, 'updateStatus']);
+        
+        Route::patch('{id}', [TenderController::class, 'update']);
+        Route::delete('{id}', [TenderController::class, 'delete']);
     });
+
 });
