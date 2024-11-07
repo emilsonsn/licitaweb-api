@@ -17,6 +17,8 @@ class TenderItem extends Model
 
     public $fillable = [
         'item',
+        'quantity',
+        'value',
         'tender_id',
     ];
 
