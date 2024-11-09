@@ -132,7 +132,6 @@ class UserService
         }
     }
     
-
     public function update($request, $user_id)
     {
         try {
@@ -219,7 +218,6 @@ class UserService
         }
     }
 
-
     public function updatePassword($request){
         try{
             $code = $request->code;
@@ -239,5 +237,4 @@ class UserService
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
-
 }

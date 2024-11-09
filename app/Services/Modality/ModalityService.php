@@ -2,12 +2,7 @@
 
 namespace App\Services\Modality;
 
-use App\Models\Status;
 use App\Models\Modality;
-use App\Models\ModalityAttachment;
-use App\Models\ModalityItem;
-use App\Models\ModalityStatus;
-use App\Models\ModalityTask;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
