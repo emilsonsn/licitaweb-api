@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
@@ -57,6 +58,13 @@ Route::middleware('jwt')->group(function(){
         
         Route::patch('{id}', [TenderController::class, 'update']);
         Route::delete('{id}', [TenderController::class, 'delete']);
+    });
+
+    Route::prefix('modality')->group(function(){
+        Route::get('all', [ModalityController::class, 'all']);
+        Route::get('search', [ModalityController::class, 'search']);
+        Route::post('create', [ModalityController::class, 'create']);
+        Route::delete('{id}', [ModalityController::class, 'delete']);
     });
 
 });
