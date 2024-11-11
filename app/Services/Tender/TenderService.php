@@ -71,7 +71,7 @@ class TenderService
                 'items' => 'required|array|min:1',
                 'items.*.item' => 'required|string',
                 'attachments' => 'nullable|array',
-                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png|max:2048',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
             ];
     
             $validator = Validator::make($request->all(), $rules);
@@ -126,6 +126,7 @@ class TenderService
     public function update($request, $tender_id)
     {
         try {
+
             $rules = [
                 'number' => 'nullable|string',
                 'organ' => 'nullable|string',
@@ -136,6 +137,10 @@ class TenderService
                 'status' => 'required|string',
                 'items_count' => 'nullable|integer',
                 'user_id' => 'required|integer|exists:users,id',
+                'items' => 'required|array|min:1',
+                'items.*.item' => 'required|string',
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -150,10 +155,35 @@ class TenderService
                 throw new Exception('Licitação não encontrada', 400);
             }
 
+            DB::beginTransaction();
+
             $tender->update($validator->validated());
+
+            foreach ($request->items as $itemData) {
+                TenderItem::create([
+                    'item' => $itemData['item'],
+                    'tender_id' => $tender->id,
+                ]);
+            }
+    
+            if ($request->has('attachments')) {
+                foreach ($request->file('attachments') as $attachment) {
+                    $path = $attachment->store('tenders/attachments', 'public');
+                    $fullPath = 'storage/' . $path;
+    
+                    $tender->attachments()->create([
+                        'filename' => $attachment->getClientOriginalName(),
+                        'path' => $fullPath,
+                        'user_id' => $request->user_id,
+                    ]);
+                }
+            }
+
+            DB::commit();
 
             return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {
+            DB::rollBack();
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => $error->getCode()];
         }
     }
@@ -162,13 +192,30 @@ class TenderService
     {
         try {
             $tenderStatus = TenderStatus::where('tender_id', $tender_id)->first();
-
+    
             if (!$tenderStatus) throw new Exception('Status da licitação não encontrado');
-
-            $tenderStatus->update([
-                'status_id' => $new_status_id,
-                'position' => $position,
-            ]);
+    
+            DB::transaction(function () use ($tenderStatus, $new_status_id, $position, $tender_id) {
+                if ($tenderStatus->status_id == $new_status_id) {
+                    TenderStatus::where('status_id', $new_status_id)
+                        ->where('position', '>=', $position)
+                        ->where('tender_id', '!=', $tender_id)
+                        ->increment('position');
+                } else {
+                    TenderStatus::where('status_id', $tenderStatus->status_id)
+                        ->where('position', '>', $tenderStatus->position)
+                        ->decrement('position');
+    
+                    TenderStatus::where('status_id', $new_status_id)
+                        ->where('position', '>=', $position)
+                        ->increment('position');
+                }
+    
+                $tenderStatus->update([
+                    'status_id' => $new_status_id,
+                    'position' => $position,
+                ]);
+            });
 
             return ['status' => true, 'data' => $tenderStatus];
         } catch (Exception $error) {
@@ -239,4 +286,5 @@ class TenderService
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
+
 }
