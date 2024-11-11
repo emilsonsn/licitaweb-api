@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ModalityController;
+use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
@@ -42,6 +43,7 @@ Route::middleware('jwt')->group(function(){
         Route::get('me', [UserController::class, 'getUser']);
         Route::post('create', [UserController::class, 'create']);
         Route::patch('{id}', [UserController::class, 'update']);
+        Route::delete('{id}', [UserController::class, 'delete']);
         Route::post('block/{id}', [UserController::class, 'userBlock']);
     });
 
@@ -67,4 +69,10 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [ModalityController::class, 'delete']);
     });
 
+    Route::prefix('status')->group(function(){
+        Route::get('all', [StatusController::class, 'all']);
+        Route::get('search', [StatusController::class, 'search']);
+        Route::post('create', [StatusController::class, 'create']);
+        Route::delete('{id}', [StatusController::class, 'delete']);
+    });
 });

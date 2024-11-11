@@ -33,7 +33,7 @@ class UserService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
 
-            $users = User::with('companyPosition', 'sector');
+            $users = User::query();
 
             if(isset($search_term)){
                 $users->where('name', 'LIKE', "%{$search_term}%")
@@ -91,18 +91,19 @@ class UserService
     public function create($request)
     {
         try {
+            $request['photo'] = $request['photo'] == 'null' ? null : $request['photo'];
+            
             $rules = [
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'nullable|string|min:8',
                 'phone' => 'nullable|string',
-                'whatsapp' => 'nullable|string',
                 'cpf_cnpj' => 'nullable|string',
                 'birth_date' => 'nullable|date',
                 'company_position_id' => 'nullable|integer',
                 'sector_id' => 'nullable|integer',
                 'is_active' => 'nullable|boolean|default:true',
-                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // validação para a foto
+                'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ];
     
             $password = str_shuffle(Str::upper(Str::random(1)) . rand(0, 9) . Str::random(1, '?!@#$%^&*') . Str::random(5));
@@ -141,7 +142,6 @@ class UserService
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255',
                 'phone' => 'nullable|string',
-                'whatsapp' => 'nullable|string',
                 'cpf_cnpj' => 'nullable|string',
                 'birth_date' => 'nullable|date',
                 'company_position_id' => 'nullable|integer',
@@ -185,6 +185,21 @@ class UserService
             $user->save();
 
             return ['status' => true, 'data' => $user];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+    public function delete($user_id){
+        try {
+            $user = User::find($user_id);
+
+            if (!$user) throw new Exception('Usuário não encontrado');
+
+            $name = $user->name;
+            $user->delete();
+
+            return ['status' => true, 'data' => ['name' => $name]];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
