@@ -17,6 +17,7 @@ class Modality extends Model
 
     public $fillable = [
         'name',
+        'description',
         'external_id',
     ];
 

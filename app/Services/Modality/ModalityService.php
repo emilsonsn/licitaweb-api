@@ -28,7 +28,8 @@ class ModalityService
             $modalities = Modality::query();
 
             if (isset($search_term)) {
-                $modalities->where('name', 'LIKE', "%{$search_term}%")
+                $modalities->where('name', 'LIKE', "%{$search_term}%")                
+                        ->orWhere('description', 'LIKE', "%{$search_term}%")
                         ->orWhere('external_id', 'LIKE', "%{$search_term}%");
             }
 
@@ -43,6 +44,7 @@ class ModalityService
         try {
             $rules = [
                 'name' => 'required|string',
+                'description' => 'nullable|string',
                 'external_id' => 'nullable|string',
             ];
     
@@ -66,6 +68,7 @@ class ModalityService
         try {
             $rules = [
                 'name' => 'required|string',
+                'description' => 'nullable|string',
                 'external_id' => 'nullable|string',
             ];
 
