@@ -2,52 +2,52 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Modality\ModalityService;
+use App\Services\Status\StatusService;
 use Illuminate\Http\Request;
 
-class ModalityController extends Controller
+class StatusController extends Controller
 {
-    private $modalityService;
+    private $statusService;
 
-    public function __construct(ModalityService $modalityService) {
-        $this->modalityService = $modalityService;
+    public function __construct(StatusService $statusService) {
+        $this->statusService = $statusService;
     }
 
     public function all() {
-        $result = $this->modalityService->all();
+        $result = $this->statusService->all();
         return $this->response($result);
     }
 
     public function search(Request $request) {
-        $result = $this->modalityService->search($request);
+        $result = $this->statusService->search($request);
         return $result;
     }
 
     public function create(Request $request) {
-        $result = $this->modalityService->create($request);
+        $result = $this->statusService->create($request);
 
         if ($result['status']) {
-            $result['message'] = "Modalidade criada com sucesso";
+            $result['message'] = "Status criado com sucesso";
         }
 
         return $this->response($result);
     }
 
     public function update(Request $request, $id) {
-        $result = $this->modalityService->update($request, $id);
+        $result = $this->statusService->update($request, $id);
 
         if ($result['status']) {
-            $result['message'] = "Modalidade atualizada com sucesso";
+            $result['message'] = "Status atualizado com sucesso";
         }
 
         return $this->response($result);
     }
 
     public function delete($id) {
-        $result = $this->modalityService->delete($id);
+        $result = $this->statusService->delete($id);
 
         if ($result['status']) {
-            $result['message'] = "Modalidade excluída com sucesso";
+            $result['message'] = "Status excluído com sucesso";
         }
 
         return $this->response($result);

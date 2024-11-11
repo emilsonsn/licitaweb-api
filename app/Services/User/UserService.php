@@ -103,6 +103,7 @@ class UserService
                 'company_position_id' => 'nullable|integer',
                 'sector_id' => 'nullable|integer',
                 'is_active' => 'nullable|boolean|default:true',
+                'role' => 'required|string|in:Admin,Manager,Collaborator',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ];
     
@@ -147,6 +148,7 @@ class UserService
                 'company_position_id' => 'nullable|integer',
                 'sector_id' => 'nullable|integer',
                 'is_active' => 'nullable|boolean|default:true',
+                'role' => 'required|string|in:Admin,Manager,Collaborator',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ];
 
