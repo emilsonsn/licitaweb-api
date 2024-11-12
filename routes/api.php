@@ -74,7 +74,7 @@ Route::middleware('jwt')->group(function(){
         Route::get('all', [StatusController::class, 'all']);
         Route::get('search', [StatusController::class, 'search']);
         Route::post('create', [StatusController::class, 'create']);
-        Route::patch('update', [StatusController::class, 'update']);
+        Route::patch('{id}', [StatusController::class, 'update']);
         Route::delete('{id}', [StatusController::class, 'delete']);
     });
 
