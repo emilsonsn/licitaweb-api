@@ -31,6 +31,9 @@ class TenderService
             $search_term = $request->search_term ?? null;
             $status = $request->status ?? null;
             $status_id = $request->status_id ?? null;
+            $certame = $request->certame ?? null;
+            $user_id = $request->user_id ?? null;
+            $modality_id = $request->user_id ?? null;
 
             $tenders = Tender::with('modality', 'user', 'tenderStatus', 'task');
 
@@ -39,8 +42,20 @@ class TenderService
                         ->orWhere('organ', 'LIKE', "%{$search_term}%");
             }
 
+            if (isset($user_id)) {
+                $tenders->where('user_id', $user_id);
+            }
+
+            if (isset($modality_id)) {
+                $tenders->where('modality_id', $modality_id);
+            }
+
             if(isset($status)){
                 $tenders->where('status', $status);
+            }
+
+            if(isset($certame)){
+                $tenders->whereDate('contest_date', $certame);
             }
 
             if(isset($status)){
