@@ -42,6 +42,7 @@ class StatusService
         try {
             $rules = [
                 'name' => 'required|string',
+                'color' => 'required|string',
             ];
     
             $validator = Validator::make($request->all(), $rules);
@@ -64,6 +65,7 @@ class StatusService
         try {
             $rules = [
                 'name' => 'required|string',
+                'color' => 'required|string',
             ];
 
             $validator = Validator::make($request->all(), $rules);

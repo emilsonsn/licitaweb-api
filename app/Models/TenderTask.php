@@ -18,6 +18,7 @@ class TenderTask extends Model
     public $fillable = [
         'name',
         'due_date',
+        'status',
         'description',
         'user_id',
         'tender_id',

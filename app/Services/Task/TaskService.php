@@ -28,6 +28,7 @@ class TenderTaskService
             $due_date = $request->due_date ?? null;
             $tender_id = $request->tender_id ?? null;
             $user_id = $request->user_id ?? null;
+            $status = $request->status ?? null;
 
             $tasks = TenderTask::query();
 
@@ -48,6 +49,10 @@ class TenderTaskService
                 $tasks->where('user_id', $user_id);
             }
 
+            if($status){
+                $tasks->where('status', $status);
+            }
+
             return $tasks->paginate($perPage);
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -61,6 +66,7 @@ class TenderTaskService
                 'name' => 'required|string',
                 'due_date' => 'required|date',
                 'description' => 'nullable|string',
+                'status' => 'nullable|string|in:Pending,InProgress,Completed',
                 'tender_id' => 'required|integer',
                 'user_id' => 'nullable|integer',
             ];
@@ -90,6 +96,7 @@ class TenderTaskService
             $rules = [
                 'name' => 'required|string',
                 'due_date' => 'required|date',
+                'status' => 'nullable|string|in:Pending,InProgress,Completed',
                 'description' => 'nullable|string',
                 'tender_id' => 'required|integer',
                 'user_id' => 'nullable|integer',
