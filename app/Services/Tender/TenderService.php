@@ -111,7 +111,7 @@ class TenderService
             if ($firstStatus) {
                 TenderStatus::create([
                     'tender_id' => $tender->id,
-                    'status_id' => $firstStatus->status_id,
+                    'status_id' => $firstStatus->id,
                     'position' => $firstStatus->position ?? 1,
                 ]);
             }
