@@ -22,7 +22,6 @@ class UserSeed extends Seeder
             'email' => 'admin@admin',
             'password' => Hash::make('admin'),
             'phone' => '83991236636',
-            'whatsapp' => '83991236636',
             'cpf_cnpj' => '13754674412',
             'birth_date' => '2001-12-18',
             'is_active' => true,
