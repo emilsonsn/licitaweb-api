@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\TenderTask;
+namespace App\Services\Task;
 
 use App\Models\TenderTask;
 use Exception;
@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class TenderTaskService
+class TaskService
 {
     public function all()
     {

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
@@ -73,6 +74,14 @@ Route::middleware('jwt')->group(function(){
         Route::get('all', [StatusController::class, 'all']);
         Route::get('search', [StatusController::class, 'search']);
         Route::post('create', [StatusController::class, 'create']);
+        Route::patch('update', [StatusController::class, 'update']);
         Route::delete('{id}', [StatusController::class, 'delete']);
+    });
+
+    Route::prefix('task')->group(function(){
+        Route::get('all', [TaskController::class, 'all']);
+        Route::get('search', [TaskController::class, 'search']);
+        Route::post('create', [TaskController::class, 'create']);
+        Route::delete('{id}', [TaskController::class, 'delete']);
     });
 });

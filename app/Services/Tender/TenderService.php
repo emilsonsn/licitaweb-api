@@ -72,10 +72,9 @@ class TenderService
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
             ];
-
-            $data = $request->all();
+            
     
-            $validator = Validator::make($data, $rules);
+            $validator = Validator::make($request->all(), $rules);
     
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
@@ -84,21 +83,24 @@ class TenderService
             DB::beginTransaction();
     
             $tender = Tender::create($validator->validated());
-                
+
+            $items = [];
             foreach ($request->items as $itemData) {
                 $itemData = json_decode($itemData, true);
-                TenderItem::create([
+                $items[] = TenderItem::create([
                     'item' => $itemData['item'],
                     'tender_id' => $tender->id,
                 ]);
             }
 
+            $attachments = [];
             if ($request->attachments) {
                 foreach ($request->attachments as $attachment) {
                     $path = $attachment->store('tenders/attachments', 'public');
                     $fullPath = 'storage/' . $path;
     
-                    $tender->attachments()->create([
+                    $attachments[] = TenderAttachment::create([
+                        'tender_id' => $tender->id,
                         'filename' => $attachment->getClientOriginalName(),
                         'path' => $fullPath,
                         'user_id' => $request->user_id,
@@ -117,6 +119,9 @@ class TenderService
             }
     
             DB::commit();
+
+            $tender['attachments'] = $attachments;
+            $tender['items'] = $items;
     
             return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Console\View\Components\Task;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -37,7 +36,7 @@ class Tender extends Model
     }
 
     public function task(){
-        return $this->belongsTo(Task::class);
+        return $this->belongsTo(TenderTask::class);
     }
 
     public function tenderStatus(){
