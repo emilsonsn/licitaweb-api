@@ -67,6 +67,7 @@ Route::middleware('jwt')->group(function(){
         Route::get('all', [ModalityController::class, 'all']);
         Route::get('search', [ModalityController::class, 'search']);
         Route::post('create', [ModalityController::class, 'create']);
+        Route::patch('{id}', [ModalityController::class, 'update']);
         Route::delete('{id}', [ModalityController::class, 'delete']);
     });
 
