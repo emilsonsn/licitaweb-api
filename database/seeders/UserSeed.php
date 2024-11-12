@@ -13,7 +13,6 @@ class UserSeed extends Seeder
      */
     public function run(): void
     {
-        
         User::firstOrCreate([
             'email' => 'admin@admin',
         ],
