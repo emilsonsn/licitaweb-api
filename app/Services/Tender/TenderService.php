@@ -70,7 +70,7 @@ class TenderService
                 'user_id' => 'required|integer|exists:users,id',
                 'items' => 'required|array|min:1',
                 'attachments' => 'nullable|array',
-                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
             ];
             
     
@@ -107,7 +107,7 @@ class TenderService
                     ]);
                 }
             }
-    
+
             $firstStatus = Status::orderBy('id', 'asc')->first();
     
             if ($firstStatus) {
@@ -117,7 +117,7 @@ class TenderService
                     'position' => $firstStatus->position ?? 1,
                 ]);
             }
-    
+
             DB::commit();
 
             $tender['attachments'] = $attachments;
