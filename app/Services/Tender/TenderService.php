@@ -69,12 +69,13 @@ class TenderService
                 'items_count' => 'nullable|integer',
                 'user_id' => 'required|integer|exists:users,id',
                 'items' => 'required|array|min:1',
-                'items.*.item' => 'required|string',
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
             ];
+
+            $data = $request->all();
     
-            $validator = Validator::make($request->all(), $rules);
+            $validator = Validator::make($data, $rules);
     
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
@@ -83,16 +84,17 @@ class TenderService
             DB::beginTransaction();
     
             $tender = Tender::create($validator->validated());
-    
+                
             foreach ($request->items as $itemData) {
+                $itemData = json_decode($itemData, true);
                 TenderItem::create([
                     'item' => $itemData['item'],
                     'tender_id' => $tender->id,
                 ]);
             }
-    
-            if ($request->has('attachments')) {
-                foreach ($request->file('attachments') as $attachment) {
+
+            if ($request->attachments) {
+                foreach ($request->attachments as $attachment) {
                     $path = $attachment->store('tenders/attachments', 'public');
                     $fullPath = 'storage/' . $path;
     
@@ -159,11 +161,17 @@ class TenderService
 
             $tender->update($validator->validated());
 
-            foreach ($request->items as $itemData) {
-                TenderItem::create([
-                    'item' => $itemData['item'],
-                    'tender_id' => $tender->id,
-                ]);
+            if ($request->attachments) {
+                foreach ($request->attachments as $attachment) {
+                    $path = $attachment->store('tenders/attachments', 'public');
+                    $fullPath = 'storage/' . $path;
+    
+                    $tender->attachments()->create([
+                        'filename' => $attachment->getClientOriginalName(),
+                        'path' => $fullPath,
+                        'user_id' => $request->user_id,
+                    ]);
+                }
             }
     
             if ($request->has('attachments')) {
