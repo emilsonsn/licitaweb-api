@@ -31,7 +31,8 @@ class TenderService
             $search_term = $request->search_term ?? null;
             $status = $request->status ?? null;
             $status_id = $request->status_id ?? null;
-            $certame = $request->certame ?? null;
+            $start_contest_date = $request->start_contest_date ?? null;
+            $end_contest_date = $request->end_contest_date ?? null;
             $user_id = $request->user_id ?? null;
             $modality_id = $request->user_id ?? null;
 
@@ -55,7 +56,10 @@ class TenderService
             }
 
             if(isset($certame)){
-                $tenders->whereDate('contest_date', $certame);
+                if ($start_contest_date == $end_contest_date)
+                    $tenders->whereDate('contest_date', $start_contest_date);
+                else
+                    $tenders->whereBetween('contest_date', [$start_contest_date, $end_contest_date]);
             }
 
             if(isset($status)){
