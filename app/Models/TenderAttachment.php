@@ -26,7 +26,7 @@ class TenderAttachment extends Model
     public function getAttributePath()
     {
         if(isset($this->path)){
-            return Storage::url('task_files/' . $this->path);
+            return env('APP_URL') . '/' . $this->path;
         }
     }
 
