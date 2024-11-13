@@ -43,6 +43,10 @@ class Tender extends Model
         return $this->hasMany(TenderItem::class);
     }
 
+    public function attachments(){
+        return $this->hasMany(TenderAttachment::class);
+    }
+
     public function tenderStatus(){
         return $this->hasMany(TenderStatus::class);
     }

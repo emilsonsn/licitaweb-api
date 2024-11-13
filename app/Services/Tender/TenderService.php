@@ -36,7 +36,7 @@ class TenderService
             $user_id = $request->user_id ?? null;
             $modality_id = $request->user_id ?? null;
 
-            $tenders = Tender::with('modality', 'user', 'tenderStatus', 'task', 'items');
+            $tenders = Tender::with('modality', 'user', 'tenderStatus', 'task', 'items', 'attachments');
 
             if (isset($search_term)) {
                 $tenders->where('number', 'LIKE', "%{$search_term}%")
