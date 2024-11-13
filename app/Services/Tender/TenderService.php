@@ -62,7 +62,7 @@ class TenderService
                     $tenders->whereBetween('contest_date', [$start_contest_date, $end_contest_date]);
             }
 
-            if(isset($status)){
+            if(isset($status_id)){
                 $tenders->wherehas('tenderStatus', function($query) use($status_id){
                     $query->where('status_id', $status_id);
                 });
