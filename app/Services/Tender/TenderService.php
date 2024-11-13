@@ -109,6 +109,9 @@ class TenderService
                 $items[] = TenderItem::create([
                     'item' => $itemData['item'],
                     'tender_id' => $tender->id,
+                    'quantity' => $itemData['quantity'],
+                    'unit_value' => $itemData['unit_value'],
+                    'value' => $itemData['value'],
                 ]);
             }
 
@@ -185,25 +188,26 @@ class TenderService
 
             $tender->update($validator->validated());
 
+            $items = [];
+            foreach ($request->items as $itemData) {
+                $itemData = json_decode($itemData, true);
+                $items[] = TenderItem::create([
+                    'item' => $itemData['item'],
+                    'tender_id' => $tender->id,
+                    'quantity' => $itemData['quantity'],
+                    'unit_value' => $itemData['unit_value'],
+                    'value' => $itemData['value'],
+                ]);
+            }
+
+            $attachments = [];
             if ($request->attachments) {
                 foreach ($request->attachments as $attachment) {
                     $path = $attachment->store('tenders/attachments', 'public');
                     $fullPath = 'storage/' . $path;
     
-                    $tender->attachments()->create([
-                        'filename' => $attachment->getClientOriginalName(),
-                        'path' => $fullPath,
-                        'user_id' => $request->user_id,
-                    ]);
-                }
-            }
-    
-            if ($request->has('attachments')) {
-                foreach ($request->file('attachments') as $attachment) {
-                    $path = $attachment->store('tenders/attachments', 'public');
-                    $fullPath = 'storage/' . $path;
-    
-                    $tender->attachments()->create([
+                    $attachments[] = TenderAttachment::create([
+                        'tender_id' => $tender->id,
                         'filename' => $attachment->getClientOriginalName(),
                         'path' => $fullPath,
                         'user_id' => $request->user_id,
@@ -212,6 +216,9 @@ class TenderService
             }
 
             DB::commit();
+
+            $tender['attachments'] = $attachments;
+            $tender['items'] = $items;
 
             return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {
