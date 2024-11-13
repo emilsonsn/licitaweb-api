@@ -92,14 +92,18 @@ class TenderService
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
             ];
-            
+
+            if(!TenderStatus::count()){
+                throw new Exception('Crie uma etapa antes de cadastrar um edital', 400);
+            }
+
             $data = $request->all();
             $validator = Validator::make($data, $rules);
-    
+
             if ($validator->fails()) {
-                return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
+                throw new Exception($validator->errors(), 400);
             }
-    
+
             DB::beginTransaction();
 
             $tender = Tender::create($validator->validated());
