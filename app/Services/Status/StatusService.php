@@ -77,7 +77,7 @@ class StatusService
             $status = Status::find($status_id);
 
             if (!$status) {
-                throw new Exception('Status não encontrado', 400);
+                throw new Exception('Etapa não encontrada', 400);
             }
 
             $status->update($validator->validated());
@@ -94,7 +94,15 @@ class StatusService
             $status = Status::find($status_id);
 
             if (!isset($status)){
-                throw new Exception('Status não encontrado', 400);
+                throw new Exception('Etapa não encontrado', 400);
+            }
+
+            if($status->tenderStatuses()){
+                throw new Exception('Não é possível deletar Etapa com editais', 400);
+            }
+
+            if(Status::count() == 1){
+                throw new Exception('Não é possível apagar todas as etapas', 400);
             }
 
             $statusId = $status->id;

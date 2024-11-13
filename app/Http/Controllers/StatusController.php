@@ -27,7 +27,7 @@ class StatusController extends Controller
         $result = $this->statusService->create($request);
 
         if ($result['status']) {
-            $result['message'] = "Status criado com sucesso";
+            $result['message'] = "Etapa criada com sucesso";
         }
 
         return $this->response($result);
@@ -37,7 +37,7 @@ class StatusController extends Controller
         $result = $this->statusService->update($request, $id);
 
         if ($result['status']) {
-            $result['message'] = "Status atualizado com sucesso";
+            $result['message'] = "Etapa atualizada com sucesso";
         }
 
         return $this->response($result);
@@ -47,7 +47,7 @@ class StatusController extends Controller
         $result = $this->statusService->delete($id);
 
         if ($result['status']) {
-            $result['message'] = "Status excluído com sucesso";
+            $result['message'] = "Etapa excluída com sucesso";
         }
 
         return $this->response($result);
