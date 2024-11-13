@@ -52,7 +52,8 @@ class TenderService
             }
 
             if(isset($status)){
-                $tenders->where('status', $status);
+                $status = explode(',', $status);
+                $tenders->whereIn('status', $status);
             }
 
             if(isset($certame)){
@@ -92,8 +93,8 @@ class TenderService
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
             ];
             
-    
-            $validator = Validator::make($request->all(), $rules);
+            $data = $request->all();
+            $validator = Validator::make($data, $rules);
     
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
@@ -166,12 +167,12 @@ class TenderService
                 'items_count' => 'nullable|integer',
                 'user_id' => 'required|integer|exists:users,id',
                 'items' => 'required|array|min:1',
-                'items.*.item' => 'required|string',
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
             ];
 
-            $validator = Validator::make($request->all(), $rules);
+            $data = $request->all();
+            $validator = Validator::make($data, $rules);
 
             if ($validator->fails()) {
                 throw new Exception($validator->errors(), 400);

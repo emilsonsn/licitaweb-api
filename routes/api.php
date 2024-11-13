@@ -82,6 +82,7 @@ Route::middleware('jwt')->group(function(){
         Route::get('all', [TaskController::class, 'all']);
         Route::get('search', [TaskController::class, 'search']);
         Route::post('create', [TaskController::class, 'create']);
+        Route::patch('{id}', [TaskController::class, 'update']);
         Route::delete('{id}', [TaskController::class, 'delete']);
     });
 
