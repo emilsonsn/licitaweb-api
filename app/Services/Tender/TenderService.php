@@ -36,7 +36,7 @@ class TenderService
             $user_id = $request->user_id ?? null;
             $modality_id = $request->user_id ?? null;
 
-            $tenders = Tender::with('modality', 'user', 'tenderStatus', 'task');
+            $tenders = Tender::with('modality', 'user', 'tenderStatus', 'task', 'items');
 
             if (isset($search_term)) {
                 $tenders->where('number', 'LIKE', "%{$search_term}%")
@@ -100,7 +100,7 @@ class TenderService
             }
     
             DB::beginTransaction();
-    
+
             $tender = Tender::create($validator->validated());
 
             $items = [];
@@ -141,7 +141,7 @@ class TenderService
 
             $tender['attachments'] = $attachments;
             $tender['items'] = $items;
-    
+
             return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {
             DB::rollBack();

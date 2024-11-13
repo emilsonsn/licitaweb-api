@@ -39,6 +39,10 @@ class Tender extends Model
         return $this->belongsTo(TenderTask::class);
     }
 
+    public function items(){
+        return $this->hasMany(TenderItem::class);
+    }
+
     public function tenderStatus(){
         return $this->hasMany(TenderStatus::class);
     }
