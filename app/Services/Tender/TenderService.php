@@ -197,7 +197,7 @@ class TenderService
                 $itemData = json_decode($itemData, true);
                 $items[] = TenderItem::updateOrCreate(
                     [
-                    'id' => $itemData['id'] ?? null,
+                        'id' => $itemData['id'] ?? null,
                     ],
                     [
                     'item' => $itemData['item'],
