@@ -34,7 +34,7 @@ class TenderService
             $start_contest_date = $request->start_contest_date ?? null;
             $end_contest_date = $request->end_contest_date ?? null;
             $user_id = $request->user_id ?? null;
-            $modality_id = $request->user_id ?? null;
+            $modality_id = $request->modality_id ?? null;
 
             $tenders = Tender::with('modality', 'user', 'tenderStatus', 'task', 'items', 'attachments');
 
