@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tender_items', function (Blueprint $table) {
-            $table->decimal('quantity')->after('item');
+            $table->integer('quantity')->after('item');
             $table->decimal('unit_value')->after('quantity');
         });
     }
