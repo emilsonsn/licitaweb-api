@@ -195,7 +195,11 @@ class TenderService
             $items = [];
             foreach ($request->items as $itemData) {
                 $itemData = json_decode($itemData, true);
-                $items[] = TenderItem::create([
+                $items[] = TenderItem::updateOrCreate(
+                    [
+                    'id' => $itemData['id'] ?? null,
+                    ],
+                    [
                     'item' => $itemData['item'],
                     'tender_id' => $tender->id,
                     'quantity' => $itemData['quantity'],
@@ -209,7 +213,8 @@ class TenderService
                     $path = $attachment->store('tenders/attachments', 'public');
                     $fullPath = 'storage/' . $path;
     
-                    $attachments[] = TenderAttachment::create([
+                    $attachments[] = TenderAttachment::updateOrCreate(
+                    [
                         'tender_id' => $tender->id,
                         'filename' => $attachment->getClientOriginalName(),
                         'path' => $fullPath,
