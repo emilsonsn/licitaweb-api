@@ -111,7 +111,6 @@ class TenderService
                     'tender_id' => $tender->id,
                     'quantity' => $itemData['quantity'],
                     'unit_value' => $itemData['unit_value'],
-                    'value' => $itemData['value'],
                 ]);
             }
 
@@ -187,7 +186,7 @@ class TenderService
             DB::beginTransaction();
 
             $tender->update($validator->validated());
-
+            
             $items = [];
             foreach ($request->items as $itemData) {
                 $itemData = json_decode($itemData, true);
@@ -196,7 +195,6 @@ class TenderService
                     'tender_id' => $tender->id,
                     'quantity' => $itemData['quantity'],
                     'unit_value' => $itemData['unit_value'],
-                    'value' => $itemData['value'],
                 ]);
             }
 
