@@ -1,7 +1,9 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -16,6 +18,12 @@ class AuthController extends Controller
 
         $user = auth()->user();
 
+        Log::create([
+            'description' => "Logou no sistema",
+            'user_id' => $user->id,
+            'request' => json_encode(['email' => $request->email]),
+        ]);
+
         return response()->json([
             'status' => true,
             'user' => $user,
@@ -29,6 +37,13 @@ class AuthController extends Controller
     {
         JWTAuth::invalidate(JWTAuth::getToken());
         $user = auth()->user();
+
+        Log::create([
+            'description' => "Deslogou do sistema",
+            'user_id' => Auth::user()->id,
+            'request' => json_encode([]),
+        ]);
+
         return response()->json(['status' => true, 'user' => $user, 'message' => 'Logout realizado com sucesso']);
     }
 

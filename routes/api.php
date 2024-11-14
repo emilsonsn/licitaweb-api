@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TaskController;
@@ -76,6 +77,11 @@ Route::middleware('jwt')->group(function(){
         Route::post('create', [StatusController::class, 'create']);
         Route::patch('{id}', [StatusController::class, 'update']);
         Route::delete('{id}', [StatusController::class, 'delete']);
+    });
+
+    Route::prefix('log')->group(function(){
+        Route::get('all', [LogController::class, 'all']);
+        Route::get('search', [LogController::class, 'search']);
     });
 
     Route::prefix('task')->group(function(){

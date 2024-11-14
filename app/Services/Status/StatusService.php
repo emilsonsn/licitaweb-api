@@ -2,8 +2,10 @@
 
 namespace App\Services\Status;
 
+use App\Models\Log;
 use App\Models\Status;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -52,6 +54,12 @@ class StatusService
             }
         
             $status = Status::create($validator->validated());
+
+            Log::create([
+                'description' => "Criou um status",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request),
+            ]);
     
             return ['status' => true, 'data' => $status];
         } catch (Exception $error) {
@@ -82,6 +90,12 @@ class StatusService
 
             $status->update($validator->validated());
 
+            Log::create([
+                'description' => "Atualizou um status",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request),
+            ]);
+
             return ['status' => true, 'data' => $status];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => $error->getCode()];
@@ -106,7 +120,14 @@ class StatusService
             }
 
             $statusId = $status->id;
+            $statusName = $status->name;
             $status->delete();
+
+            Log::create([
+                'description' => "Deletou um status",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $statusName]),
+            ]);
 
             return ['status' => true, 'data' => ['statusId' => $statusId]];
         } catch (Exception $error) {

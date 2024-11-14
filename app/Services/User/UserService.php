@@ -32,22 +32,30 @@ class UserService
         try {
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
-
+    
             $users = User::query();
-
-            if(isset($search_term)){
+    
+            if (isset($search_term)) {
                 $users->where('name', 'LIKE', "%{$search_term}%")
                     ->orWhere('email', 'LIKE', "%{$search_term}%");
             }
-
-            $users = $users->paginate($perPage);
-
+    
+            $users = $users->with(['logs' => function ($query) {
+                $query->where('created_at', '>=', now()->subMinutes(5));
+            }])->paginate($perPage);
+    
+            $users->getCollection()->transform(function ($user) {
+                $user['is_online'] = $user->logs->isNotEmpty();
+                unset($user->logs);
+                return $user;
+            });
+    
             return $users;
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
-    }  
-
+    }    
+    
     public function getUser()
     {
         try {

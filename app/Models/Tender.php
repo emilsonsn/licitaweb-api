@@ -47,6 +47,18 @@ class Tender extends Model
         return $this->hasMany(TenderAttachment::class);
     }
 
+    public function status()
+    {
+        return $this->hasOneThrough(
+            Status::class,       // Modelo final que você quer retornar
+            TenderStatus::class, // Modelo intermediário
+            'tender_id',         // Chave estrangeira no modelo TenderStatus
+            'id',                // Chave primária no modelo Status
+            'id',                // Chave primária no modelo Tender
+            'status_id'          // Chave estrangeira no modelo TenderStatus
+        );
+    }
+    
     public function tenderStatus(){
         return $this->hasMany(TenderStatus::class);
     }

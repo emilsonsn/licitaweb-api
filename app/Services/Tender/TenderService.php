@@ -2,6 +2,7 @@
 
 namespace App\Services\Tender;
 
+use App\Models\Log;
 use App\Models\Status;
 use App\Models\Tender;
 use App\Models\TenderAttachment;
@@ -9,6 +10,7 @@ use App\Models\TenderItem;
 use App\Models\TenderStatus;
 use App\Models\TenderTask;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -36,7 +38,15 @@ class TenderService
             $user_id = $request->user_id ?? null;
             $modality_id = $request->modality_id ?? null;
 
-            $tenders = Tender::with('modality', 'user', 'tenderStatus', 'task', 'items', 'attachments');
+            $tenders = Tender::with(
+                'modality',
+                'user',
+                'tenderStatus',
+                'task',
+                'items',
+                'attachments',
+                'status'
+            );
 
             if (isset($search_term)) {
                 $tenders->where('number', 'LIKE', "%{$search_term}%")
@@ -85,7 +95,7 @@ class TenderService
                 'contest_date' => 'required|date',
                 'object' => 'required|string',
                 'estimated_value' => 'nullable|numeric',
-                'status' => 'required|string',
+                'status_id' => 'required|integer',
                 'items_count' => 'nullable|integer',
                 'user_id' => 'required|integer|exists:users,id',
                 'items' => 'required|array|min:1',
@@ -134,20 +144,22 @@ class TenderService
                 }
             }
 
-            $firstStatus = Status::orderBy('id', 'asc')->first();
-    
-            if ($firstStatus) {
-                TenderStatus::create([
-                    'tender_id' => $tender->id,
-                    'status_id' => $firstStatus->id,
-                    'position' => $firstStatus->position ?? 1,
-                ]);
-            }
+            TenderStatus::create([
+                'tender_id' => $tender->id,
+                'status_id' => $request->status_id,
+                'position' => $firstStatus->position ?? 1,
+            ]);
 
             DB::commit();
 
             $tender['attachments'] = $attachments;
             $tender['items'] = $items;
+
+            Log::create([
+                'description' => "Criou um edital",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request->all()),
+            ]);
 
             return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {
@@ -167,7 +179,7 @@ class TenderService
                 'contest_date' => 'required|date',
                 'object' => 'required|string',
                 'estimated_value' => 'nullable|numeric',
-                'status' => 'required|string',
+                'status_id' => 'required|integer',
                 'items_count' => 'nullable|integer',
                 'user_id' => 'required|integer|exists:users,id',
                 'items' => 'required|array|min:1',
@@ -223,7 +235,22 @@ class TenderService
                 }
             }
 
+            TenderStatus::updateOrcreate(
+            [
+                'tender_id' => $tender->id,
+            ],
+            [
+                'status_id' => $request->status_id,
+                'position' => $firstStatus->position ?? 1,
+            ]);
+
             DB::commit();
+
+            Log::create([
+                'description' => "Atualizou um edital",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request->all()),
+            ]);
 
             $tender['attachments'] = $attachments;
             $tender['items'] = $items;
@@ -262,6 +289,12 @@ class TenderService
                     'status_id' => $new_status_id,
                     'position' => $position,
                 ]);
+
+                Log::create([
+                    'description' => "Atualizou um status",
+                    'user_id' => Auth::user()->id,
+                    'request' => json_encode([]),
+                ]);
             });
 
             return ['status' => true, 'data' => $tenderStatus];
@@ -278,7 +311,14 @@ class TenderService
             if (!$tender) throw new Exception('Licitação não encontrada');
 
             $tenderId = $tender->id;
+            $tenderObject = $tender->object;
             $tender->delete();
+
+            Log::create([
+                'description' => "Deletou um edital",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['object' => $tenderObject]),
+            ]);
 
             return ['status' => true, 'data' => ['tenderId' => $tenderId]];
         } catch (Exception $error) {
@@ -296,6 +336,14 @@ class TenderService
             $attachmentId = $attachment->id;
             $attachment->delete();
 
+            $filename = $attachment->filename;
+
+            Log::create([
+                'description' => "Deletou um anexo",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $filename]),
+            ]);
+
             return ['status' => true, 'data' => ['attachmentId' => $attachmentId]];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -310,7 +358,14 @@ class TenderService
             if (!$item) throw new Exception('Item não encontrado');
 
             $itemId = $item->id;
+            $itemName = $item->item;
             $item->delete();
+
+            Log::create([
+                'description' => "Deletou um item",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $itemName]),
+            ]);
 
             return ['status' => true, 'data' => ['itemId' => $itemId]];
         } catch (Exception $error) {
@@ -326,7 +381,15 @@ class TenderService
             if (!$task) throw new Exception('Tarefa não encontrada');
 
             $taskId = $task->id;
+            $taskName = $task->name;
+            
             $task->delete();
+
+            Log::create([
+                'description' => "Deletou um tarefa",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $taskName]),
+            ]);
 
             return ['status' => true, 'data' => ['taskId' => $taskId]];
         } catch (Exception $error) {

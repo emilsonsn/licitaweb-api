@@ -2,6 +2,7 @@
 
 namespace App\Services\Task;
 
+use App\Models\Log;
 use App\Models\TenderTask;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -82,6 +83,12 @@ class TaskService
             $data['user_id'] = $data['user_id'] ?? Auth::user()->id;
         
             $task = TenderTask::create($data);
+
+            Log::create([
+                'description' => "Criou um tarefa",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request->all()),
+            ]);
     
             return ['status' => true, 'data' => $task];
         } catch (Exception $error) {
@@ -120,6 +127,12 @@ class TaskService
 
             $task->update($data);
 
+            Log::create([
+                'description' => "Atualizou um tarefa",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request->all()),
+            ]);
+
             return ['status' => true, 'data' => $task];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => $error->getCode()];
@@ -134,7 +147,14 @@ class TaskService
             if (!$task) throw new Exception('Tarefa não encontrada');
 
             $taskId = $task->id;
+            $taskName = $task->name;
             $task->delete();
+
+            Log::create([
+                'description' => "Apagou um tarefa",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['Nome' => $taskName]),
+            ]);
 
             return ['status' => true, 'data' => ['taskId' => $taskId]];
         } catch (Exception $error) {

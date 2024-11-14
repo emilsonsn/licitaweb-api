@@ -2,8 +2,10 @@
 
 namespace App\Services\Modality;
 
+use App\Models\Log;
 use App\Models\Modality;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
@@ -55,6 +57,12 @@ class ModalityService
             }
         
             $modality = Modality::create($validator->validated());
+
+            Log::create([
+                'description' => "Criou um modalidade",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request->all()),
+            ]);
     
             return ['status' => true, 'data' => $modality];
         } catch (Exception $error) {
@@ -86,6 +94,12 @@ class ModalityService
 
             $modality->update($validator->validated());
 
+            Log::create([
+                'description' => "Atualizou um modalidade",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request->all()),
+            ]);
+
             return ['status' => true, 'data' => $modality];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => $error->getCode()];
@@ -100,7 +114,14 @@ class ModalityService
             if (!$modality) throw new Exception('Modalidade não encontrada');
 
             $modalityId = $modality->id;
+            $modalityName = $modality->name;
             $modality->delete();
+
+            Log::create([
+                'description' => "Atualizou um modalidade",
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $modalityName]),
+            ]);
 
             return ['status' => true, 'data' => ['modalityId' => $modalityId]];
         } catch (Exception $error) {
