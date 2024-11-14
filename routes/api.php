@@ -30,11 +30,11 @@ Route::get('validateToken', [AuthController::class, 'validateToken']);
 
 Route::middleware('jwt')->group(function(){
 
+    Route::post('logout', [AuthController::class, 'logout']);
+
     Route::middleware(AdminMiddleware::class)->group(function() {
         // Middleware do admin
     });
-
-    Route::post('logout', [AuthController::class, 'logout']);
 
     Route::prefix('user')->group(function(){
         Route::get('all', [UserController::class, 'all']);
