@@ -96,8 +96,8 @@ class StatusService
             if (!isset($status)){
                 throw new Exception('Etapa não encontrado', 400);
             }
-
-            if($status->tenderStatuses()){
+                    
+            if($status->tenderStatuses()->count()){
                 throw new Exception('Não é possível deletar Etapa com editais', 400);
             }
 
