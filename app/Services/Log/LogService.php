@@ -24,7 +24,7 @@ class LogService
             $description = $request->description ?? null;
             $user_id = $request->user_id ?? null;
 
-            $logs = Log::query();
+            $logs = Log::with('user');
 
             if (isset($search_term)) {
                 $logs->where('description', 'LIKE', "%{$description}%");
