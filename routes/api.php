@@ -51,6 +51,7 @@ Route::middleware('jwt')->group(function(){
     Route::prefix('tender')->group(function(){
         Route::get('all', [TenderController::class, 'all']);
         Route::get('search', [TenderController::class, 'search']);
+        Route::get('{id}', [TenderController::class, 'getById']);
         Route::post('create', [TenderController::class, 'create']);
 
         Route::delete('attachment/{attachmentId}', [TenderController::class, 'deleteAttachment']);

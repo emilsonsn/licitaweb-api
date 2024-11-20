@@ -19,7 +19,7 @@ class TenderService
     public function all()
     {
         try {
-            $tenders = Tender::with('modality', 'user')->get();
+            $tenders = Tender::with('modality', 'user', 'status')->get();
             return ['status' => true, 'data' => $tenders];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -66,11 +66,15 @@ class TenderService
                 $tenders->whereIn('status', $status);
             }
 
-            if(isset($certame)){
+            if(isset($start_contest_date) && $end_contest_date){
                 if ($start_contest_date == $end_contest_date)
                     $tenders->whereDate('contest_date', $start_contest_date);
                 else
                     $tenders->whereBetween('contest_date', [$start_contest_date, $end_contest_date]);
+            }elseif (isset($start_contest_date)){
+                $tenders->whereDate('contest_date', $start_contest_date);
+            }elseif (isset($end_contest_date)){
+                $tenders->whereDate('contest_date', $end_contest_date);
             }
 
             if(isset($status_id)){
@@ -80,6 +84,19 @@ class TenderService
             }
 
             return $tenders->paginate($perPage);
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+    public function getById($id)
+    {
+        try {
+            $tender = Tender::with('items', 'attachments', 'status')->find($id);  
+
+            if(!isset($tender)) throw new Exception("Edital não encontrado");
+    
+            return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
@@ -396,5 +413,4 @@ class TenderService
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
-
 }

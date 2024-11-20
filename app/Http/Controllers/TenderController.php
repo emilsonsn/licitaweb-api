@@ -23,6 +23,16 @@ class TenderController extends Controller
         return $result;
     }
 
+    public function getById($id) {
+        $result = $this->tenderService->getById($id);
+
+        if ($result['status']) {
+            $result['message'] = "Licitação encontrada";
+        }
+
+        return $this->response($result);
+    }
+
     public function create(Request $request) {
         $result = $this->tenderService->create($request);
 
