@@ -14,7 +14,7 @@ class TaskService
     public function all()
     {
         try {
-            $tasks = TenderTask::get();
+            $tasks = TenderTask::with('user')->get();
             return ['status' => true, 'data' => $tasks];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
