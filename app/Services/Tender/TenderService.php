@@ -66,15 +66,15 @@ class TenderService
                 $tenders->whereIn('status', $status);
             }
 
-            if(isset($start_contest_date) && $end_contest_date){
+            if(isset($start_contest_date) && isset($end_contest_date)){
                 if ($start_contest_date == $end_contest_date)
                     $tenders->whereDate('contest_date', $start_contest_date);
                 else
                     $tenders->whereBetween('contest_date', [$start_contest_date, $end_contest_date]);
             }elseif (isset($start_contest_date)){
-                $tenders->whereDate('contest_date', $start_contest_date);
+                $tenders->whereDate('contest_date', '>', $start_contest_date);
             }elseif (isset($end_contest_date)){
-                $tenders->whereDate('contest_date', $end_contest_date);
+                $tenders->whereDate('contest_date', '<' ,$end_contest_date);
             }
 
             if(isset($status_id)){
