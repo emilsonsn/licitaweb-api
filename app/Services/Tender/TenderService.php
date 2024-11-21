@@ -115,7 +115,7 @@ class TenderService
                 'status_id' => 'required|integer',
                 'items_count' => 'nullable|integer',
                 'user_id' => 'required|integer|exists:users,id',
-                'items' => 'required|array|min:1',
+                'items' => 'nullable|array|min:1',
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
             ];
@@ -136,14 +136,16 @@ class TenderService
             $tender = Tender::create($validator->validated());
 
             $items = [];
-            foreach ($request->items as $itemData) {
-                $itemData = json_decode($itemData, true);
-                $items[] = TenderItem::create([
-                    'item' => $itemData['item'],
-                    'tender_id' => $tender->id,
-                    'quantity' => $itemData['quantity'],
-                    'unit_value' => $itemData['unit_value'],
-                ]);
+            if($request->items){
+                foreach ($request->items as $itemData) {
+                    $itemData = json_decode($itemData, true);
+                    $items[] = TenderItem::create([
+                        'item' => $itemData['item'],
+                        'tender_id' => $tender->id,
+                        'quantity' => $itemData['quantity'],
+                        'unit_value' => $itemData['unit_value'],
+                    ]);
+                }
             }
 
             $attachments = [];
