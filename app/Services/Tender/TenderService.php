@@ -116,6 +116,10 @@ class TenderService
     public function create($request)
     {
         try {
+            $request['estimated_value'] = $request['estimated_value'] != 'null' ? $request['estimated_value'] : null;
+            $request['items_count'] = $request['items_count'] != 'null' ? $request['items_count'] : null;
+            $request['nullable'] = $request['nullable'] != 'null' ? $request['nullable'] : null;
+
             $rules = [
                 'number' => 'nullable|string',
                 'organ' => 'nullable|string',
@@ -201,6 +205,10 @@ class TenderService
     public function update($request, $tender_id)
     {
         try {
+
+            $request['estimated_value'] = $request['estimated_value'] != 'null' ? $request['estimated_value'] : null;
+            $request['items_count'] = $request['items_count'] != 'null' ? $request['items_count'] : null;
+            $request['nullable'] = $request['nullable'] != 'null' ? $request['nullable'] : null;
 
             $rules = [
                 'number' => 'nullable|string',
