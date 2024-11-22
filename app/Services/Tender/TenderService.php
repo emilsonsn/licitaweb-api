@@ -83,7 +83,18 @@ class TenderService
                 });
             }
 
-            return $tenders->paginate($perPage);
+            $totalValue = $tenders->sum('estimated_value');
+
+            $paginatedResults = $tenders->paginate($perPage);
+
+            return [
+                'data' => $paginatedResults->items(),
+                'total' => $paginatedResults->total(),
+                'per_page' => $paginatedResults->perPage(),
+                'current_page' => $paginatedResults->currentPage(),
+                'last_page' => $paginatedResults->lastPage(),
+                'total_value' => $totalValue
+            ];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
@@ -201,7 +212,7 @@ class TenderService
                 'status_id' => 'required|integer',
                 'items_count' => 'nullable|integer',
                 'user_id' => 'required|integer|exists:users,id',
-                'items' => 'required|array|min:1',
+                'items' => 'nullable|array|min:1',
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
             ];
@@ -224,18 +235,20 @@ class TenderService
             $tender->update($validator->validated());
             
             $items = [];
-            foreach ($request->items as $itemData) {
-                $itemData = json_decode($itemData, true);
-                $items[] = TenderItem::updateOrCreate(
-                    [
-                        'id' => $itemData['id'] ?? null,
-                    ],
-                    [
-                    'item' => $itemData['item'],
-                    'tender_id' => $tender->id,
-                    'quantity' => $itemData['quantity'],
-                    'unit_value' => $itemData['unit_value'],
-                ]);
+            if ($request->items) {
+                foreach ($request->items as $itemData) {
+                    $itemData = json_decode($itemData, true);
+                    $items[] = TenderItem::updateOrCreate(
+                        [
+                            'id' => $itemData['id'] ?? null,
+                        ],
+                        [
+                        'item' => $itemData['item'],
+                        'tender_id' => $tender->id,
+                        'quantity' => $itemData['quantity'],
+                        'unit_value' => $itemData['unit_value'],
+                    ]);
+                }
             }
 
             $attachments = [];
