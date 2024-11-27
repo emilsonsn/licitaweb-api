@@ -37,6 +37,7 @@ class TenderService
             $end_contest_date = $request->end_contest_date ?? null;
             $user_id = $request->user_id ?? null;
             $modality_id = $request->modality_id ?? null;
+            $external_id = $request->external_id ?? null;
 
             $tenders = Tender::with(
                 'modality',
@@ -51,6 +52,11 @@ class TenderService
             if (isset($search_term)) {
                 $tenders->where('number', 'LIKE', "%{$search_term}%")
                         ->orWhere('organ', 'LIKE', "%{$search_term}%");
+            }
+
+            if (isset($external_id)) {
+                $tenders->where('number', $external_id)
+                        ->orWhere('external_id', $external_id);
             }
 
             if (isset($user_id)) {
@@ -112,6 +118,7 @@ class TenderService
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
+    
 
     public function create($request)
     {
@@ -121,6 +128,7 @@ class TenderService
             $request['nullable'] = $request['nullable'] != 'null' ? $request['nullable'] : null;
 
             $rules = [
+                'external_id' => 'nullable|string',
                 'number' => 'nullable|string',
                 'organ' => 'nullable|string',
                 'modality_id' => 'required|integer|exists:modalities,id',
@@ -211,6 +219,7 @@ class TenderService
             $request['nullable'] = $request['nullable'] != 'null' ? $request['nullable'] : null;
 
             $rules = [
+                'external_id' => 'nullable|string',
                 'number' => 'nullable|string',
                 'organ' => 'nullable|string',
                 'modality_id' => 'required|integer|exists:modalities,id',

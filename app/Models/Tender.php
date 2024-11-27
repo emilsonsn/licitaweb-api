@@ -16,6 +16,7 @@ class Tender extends Model
     public $table = 'tenders';
 
     public $fillable = [
+        'external_id',
         'number',
         'organ',
         'modality_id',
