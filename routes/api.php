@@ -7,6 +7,7 @@ use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenderController;
+use App\Http\Controllers\TenderOccurrenceController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
 
@@ -70,6 +71,14 @@ Route::middleware('jwt')->group(function(){
         Route::post('create', [ModalityController::class, 'create']);
         Route::patch('{id}', [ModalityController::class, 'update']);
         Route::delete('{id}', [ModalityController::class, 'delete']);
+    });
+
+    Route::prefix('tender-occurrence')->group(function(){
+        Route::get('all', [TenderOccurrenceController::class, 'all']);
+        Route::get('search', [TenderOccurrenceController::class, 'search']);
+        Route::post('create', [TenderOccurrenceController::class, 'create']);
+        Route::patch('{id}', [TenderOccurrenceController::class, 'update']);
+        Route::delete('{id}', [TenderOccurrenceController::class, 'delete']);
     });
 
     Route::prefix('status')->group(function(){
