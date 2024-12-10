@@ -32,6 +32,6 @@ class TenderOccurrence extends Model
     }
 
     public function files(){
-        $this->hasMany(TenderOccurrenceFile::class);
+        $this->hasMany(TenderOccurrenceFile::class, 'tender_occurrence_id', 'id');
     }
 }
