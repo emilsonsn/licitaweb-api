@@ -20,7 +20,7 @@ class TenderOccurrenceService
             $tender_id = $request->tender_id;
             $user_id = $request->user_id;
 
-            $tenderOccurrences = TenderOccurrence::orderBy('id', 'desc');
+            $tenderOccurrences = TenderOccurrence::with('files')->orderBy('id', 'desc');
 
             if(isset($search_term)){
                 $tenderOccurrences->where('title', 'LIKE', "%{$search_term}%")

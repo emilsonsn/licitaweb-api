@@ -22,6 +22,10 @@ class TenderOccurrenceFile extends Model
         'tender_occurrence_id',
     ];
 
+    public function getPathAttribute($value){
+        return $value ? asset('storage/' . $value) : null;
+    }
+
     public function occurrence(){
         $this->belongsTo(TenderOccurrence::class);
     }
