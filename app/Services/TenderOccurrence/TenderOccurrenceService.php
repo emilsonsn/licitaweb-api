@@ -66,8 +66,8 @@ class TenderOccurrenceService
             $tenderOccurrence = TenderOccurrence::create($data);
 
             $files = [];
-            if($request->files && count($request->files)){
-                foreach ($request->files as $file) {
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
                     $path = $file->store('tenders/occurrences', 'public');
     
                     $files[] = TenderOccurrenceFile::create([
