@@ -63,7 +63,7 @@ class TenderOccurrenceService
 
             $data['user_id'] = Auth::user()->id;
 
-            $tenderOccurrence = TenderOccurrence::create();
+            $tenderOccurrence = TenderOccurrence::create($data);
 
             $files = [];
             if($request->files && count($request->files)){
