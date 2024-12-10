@@ -24,14 +24,16 @@ class TenderOccurrence extends Model
     ];
 
     public function user(){
-        $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function tender(){
-        $this->belongsTo(Tender::class);
+        return $this->belongsTo(Tender::class);
     }
 
     public function files(){
-        $this->hasMany(TenderOccurrenceFile::class, 'tender_occurrence_id', 'id');
+        return $this->hasMany(TenderOccurrenceFile::class);
     }
+
+
 }

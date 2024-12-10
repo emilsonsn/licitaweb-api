@@ -27,6 +27,7 @@ class TenderOccurrenceFile extends Model
     }
 
     public function occurrence(){
-        $this->belongsTo(TenderOccurrence::class);
+        return $this->belongsTo(TenderOccurrence::class);
     }
+
 }
