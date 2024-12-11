@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\Notification\NotificationService;
 use Illuminate\Http\Request;
 
-class StatusController extends Controller
+class NotificationController extends Controller
 {
     private $notificationService;
 

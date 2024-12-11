@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ModalityController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenderController;
@@ -34,8 +35,7 @@ Route::middleware('jwt')->group(function(){
 
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::middleware(AdminMiddleware::class)->group(function() {
-        // Middleware do admin
+    Route::middleware(AdminMiddleware::class)->group(function() {    
     });
 
     Route::prefix('user')->group(function(){
@@ -89,6 +89,14 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [StatusController::class, 'delete']);
     });
 
+    Route::prefix('notification')->group(function(){
+        Route::get('all', [NotificationController::class, 'all']);
+        Route::get('search', [NotificationController::class, 'search']);
+        Route::post('create', [NotificationController::class, 'create']);
+        Route::patch('{id}', [NotificationController::class, 'update']);
+        Route::delete('{id}', [NotificationController::class, 'delete']);
+    });
+
     Route::prefix('log')->group(function(){
         Route::get('all', [LogController::class, 'all']);
         Route::get('search', [LogController::class, 'search']);
@@ -101,5 +109,4 @@ Route::middleware('jwt')->group(function(){
         Route::patch('{id}', [TaskController::class, 'update']);
         Route::delete('{id}', [TaskController::class, 'delete']);
     });
-
 });
