@@ -26,6 +26,8 @@ class Tender extends Model
         'status',
         'items_count',
         'user_id',
+        'is_contract',
+        'client_id'
     ];
 
     public function modality(){
@@ -62,5 +64,9 @@ class Tender extends Model
     
     public function tenderStatus(){
         return $this->hasMany(TenderStatus::class);
+    }
+
+    public function client(){
+        return $this->belongsTo(Client::class);
     }
 }

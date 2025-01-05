@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClientController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\NotificationController;
@@ -71,6 +72,14 @@ Route::middleware('jwt')->group(function(){
         Route::post('create', [ModalityController::class, 'create']);
         Route::patch('{id}', [ModalityController::class, 'update']);
         Route::delete('{id}', [ModalityController::class, 'delete']);
+    });
+
+    Route::prefix('client')->group(function(){
+        Route::get('all', [ClientController::class, 'all']);
+        Route::get('search', [ClientController::class, 'search']);
+        Route::post('create', [ClientController::class, 'create']);
+        Route::patch('{id}', [ClientController::class, 'update']);
+        Route::delete('{id}', [ClientController::class, 'delete']);
     });
 
     Route::prefix('tender-occurrence')->group(function(){

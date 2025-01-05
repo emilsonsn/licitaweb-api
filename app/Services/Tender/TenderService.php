@@ -3,7 +3,6 @@
 namespace App\Services\Tender;
 
 use App\Models\Log;
-use App\Models\Status;
 use App\Models\Tender;
 use App\Models\TenderAttachment;
 use App\Models\TenderItem;
@@ -38,6 +37,7 @@ class TenderService
             $user_id = $request->user_id ?? null;
             $modality_id = $request->modality_id ?? null;
             $external_id = $request->external_id ?? null;
+            $is_contract = $request->is_contract ?? null;
 
             $tenders = Tender::with(
                 'modality',
@@ -52,6 +52,10 @@ class TenderService
             if (isset($search_term)) {
                 $tenders->where('number', 'LIKE', "%{$search_term}%")
                         ->orWhere('organ', 'LIKE', "%{$search_term}%");
+            }
+
+            if(isset($is_contract)){
+                $tenders->where('is_contract', $is_contract);
             }
 
             if (isset($external_id)) {
@@ -141,6 +145,7 @@ class TenderService
                 'items' => 'nullable|array|min:1',
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
+                'client_id' => 'nullable|integer|exists:clients,id',
             ];
 
             if(!TenderStatus::count()){
@@ -232,6 +237,8 @@ class TenderService
                 'items' => 'nullable|array|min:1',
                 'attachments' => 'nullable|array',
                 'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
+                'is_contract' => 'nullable|boolean',
+                'client_id' => 'nullable|integer|exists:clients,id',
             ];
 
             $data = $request->all();

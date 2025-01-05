@@ -9,6 +9,21 @@ use Illuminate\Support\Facades\Validator;
 class ClientService
 {
 
+    public function all(){
+        try {
+            $clients = Client::orderBy('id', 'desc')
+                ->get();
+
+
+            return [
+                'status' =>  true, 
+                'data'   => $clients
+            ];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
     public function search($request)
     {
         try {
@@ -21,7 +36,6 @@ class ClientService
                 $clients->where('name', 'LIKE', "%{$search_term}%")
                     ->orWhere('cpf_cnpj', 'LIKE', "%{$search_term}%")
                     ->orWhere('email', 'LIKE', "%{$search_term}%")
-                    ->orWhere('phone', 'LIKE', "%{$search_term}%")
                     ->orWhere('whatsapp', 'LIKE', "%{$search_term}%");
             }
 
@@ -37,14 +51,22 @@ class ClientService
     {
         try {
             $rules = [
-                'name' => 'required|string|max:255',
-                'cpf_cnpj' => 'required|string|max:255',
-                'phone' => 'required|string|max:255',
-                'whatsapp' => 'required|string|max:255',
-                'email' => 'required|string|max:255',
-                'address' => 'required|string|max:255',
-                'city' => 'required|string|max:255',
-                'state' => 'required|string|max:255',
+                'name' => ['required', 'string', 'max:255'],
+                'type' => ['required', 'in:Person,Company'], // Pessoa fisica, pessoa juridica
+                'cpf_cnpj' => ['required', 'string', 'max:255'],
+                'state_registration' => ['nullable', 'string', 'max:255'],
+                'cep' => ['nullable', 'string', 'max:255'], // Colocou o cep ele precisa puxar as outras informações (API viacep)
+                'state' => ['nullable', 'string', 'max:255'],
+                'city' => ['nullable', 'string', 'max:255'],
+                'address' => ['nullable', 'string', 'max:255'],
+                'number' => ['nullable', 'string', 'max:255'],
+                'complement' => ['nullable', 'string', 'max:255'],
+                'contact' => ['nullable', 'string', 'max:255'],
+                'fix_phone' => ['nullable', 'string', 'max:255'],
+                'whatsapp' => ['nullable', 'string', 'max:255'],
+                'email' => ['required', 'string', 'max:255'],
+                'user_id' => ['required', 'string', 'max:255'], // Responsável
+                'flag' => ['required', 'string', 'max:255'], // Bandeira: Verde, amarela e vermelha
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -66,14 +88,22 @@ class ClientService
     {
         try {
             $rules = [
-                'fantasy_name' => 'required|string|max:255',
-                'cpf_cnpj' => 'required|string|max:255',
-                'phone' => 'required|string|max:255',
-                'whatsapp' => 'required|string|max:255',
-                'email' => 'required|string|max:255',
-                'address' => 'required|string|max:255',
-                'city' => 'required|string|max:255',
-                'state' => 'required|string|max:255',
+                'name' => ['required', 'string', 'max:255'],
+                'type' => ['required', 'in:Person,Company'], // Pessoa fisica, pessoa juridica
+                'cpf_cnpj' => ['required', 'string', 'max:255'],
+                'state_registration' => ['nullable', 'string', 'max:255'],
+                'cep' => ['nullable', 'string', 'max:255'], // Colocou o cep ele precisa puxar as outras informações (API viacep)
+                'state' => ['nullable', 'string', 'max:255'],
+                'city' => ['nullable', 'string', 'max:255'],
+                'address' => ['nullable', 'string', 'max:255'],
+                'number' => ['nullable', 'string', 'max:255'],
+                'complement' => ['nullable', 'string', 'max:255'],
+                'contact' => ['nullable', 'string', 'max:255'],
+                'fix_phone' => ['nullable', 'string', 'max:255'],
+                'whatsapp' => ['nullable', 'string', 'max:255'],
+                'email' => ['required', 'string', 'max:255'],
+                'user_id' => ['required', 'string', 'max:255'], // Responsável
+                'flag' => ['required', 'string', 'max:255'], // Bandeira: Verde, amarela e vermelha
             ];
 
             $validator = Validator::make($request->all(), $rules);
