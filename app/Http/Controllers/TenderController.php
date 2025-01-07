@@ -53,6 +53,17 @@ class TenderController extends Controller
         return $this->response($result);
     }
 
+    public function convertToContract($tender_id) {
+
+        $result = $this->tenderService->convertToContract($tender_id);
+
+        if ($result['status']) {
+            $result['message'] = "Licitação convertida para contrato com sucesso";
+        }
+
+        return $this->response($result);
+    }
+
     public function updateStatus($tender_id, Request $request) {
         $new_status_id = $request->input('status_id');
         $position = $request->input('position');

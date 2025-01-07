@@ -318,6 +318,31 @@ class TenderService
         }
     }
 
+    public function convertToContract($tender_id)
+    {
+        try{
+            $tender = Tender::find($tender_id);
+
+            if(!isset($tender)) throw new Exception('Licitação não encontrado');
+
+            $tender->is_contract = true;
+            $tender->save();
+
+            return [
+                'status' => true,
+                'data'   => $tender
+            ];
+
+        }catch (Exception $error) {
+            return [
+                'status'     => false,
+                'error'      => $error->getMessage(),
+                'statusCode' => $error->getCode()
+            ];
+        }
+
+    }
+
     public function updateStatus($tender_id, $new_status_id, $position)
     {
         try {

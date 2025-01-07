@@ -58,8 +58,8 @@ Route::middleware('jwt')->group(function(){
 
         Route::delete('attachment/{attachmentId}', [TenderController::class, 'deleteAttachment']);
         Route::delete('item/{itemId}', [TenderController::class, 'deleteItem']);
-        Route::delete('task/{taskId}', [TenderController::class, 'deleteTask']);
-
+        Route::delete('task/{taskId}', [TenderController::class, 'deleteTask']);        
+        Route::patch('convert-to-contract/{tender_id}', [TenderController::class, 'convertToContract']);
         Route::patch('{tender_id}/status', [TenderController::class, 'updateStatus']);
         
         Route::patch('{id}', [TenderController::class, 'update']);

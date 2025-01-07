@@ -11,7 +11,7 @@ class Client extends Model
 
     public $table = 'clients';
 
-    public $filalble = [
+    public $fillable = [
         'name',
         'type',
         'cpf_cnpj',
