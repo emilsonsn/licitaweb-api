@@ -14,7 +14,7 @@ class ClientService
                 ->get();
 
             return [
-                'status' =>  true, 
+                'status' =>  true,
                 'data'   => $clients
             ];
         } catch (Exception $error) {
@@ -28,6 +28,7 @@ class ClientService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
             $flag = $request->flag ?? null;
+            $user_id = $request->user_id ?? null;
 
             $clients = Client::orderBy('id', 'desc');
 
@@ -40,6 +41,10 @@ class ClientService
 
             if(isset($flag)){
                 $clients->where('flag', $flag);
+            }
+
+            if(isset($user_id)){
+                $clients->where('user_id', $user_id);
             }
 
             $clients = $clients->paginate($perPage);
