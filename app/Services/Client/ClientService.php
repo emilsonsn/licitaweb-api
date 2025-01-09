@@ -8,12 +8,10 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientService
 {
-
     public function all(){
         try {
             $clients = Client::orderBy('id', 'desc')
                 ->get();
-
 
             return [
                 'status' =>  true, 
@@ -29,6 +27,7 @@ class ClientService
         try {
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
+            $flag = $request->flag ?? null;
 
             $clients = Client::orderBy('id', 'desc');
 
@@ -37,6 +36,10 @@ class ClientService
                     ->orWhere('cpf_cnpj', 'LIKE', "%{$search_term}%")
                     ->orWhere('email', 'LIKE', "%{$search_term}%")
                     ->orWhere('whatsapp', 'LIKE', "%{$search_term}%");
+            }
+
+            if(isset($flag)){
+                $clients->where('flag', $flag);
             }
 
             $clients = $clients->paginate($perPage);
@@ -52,10 +55,10 @@ class ClientService
         try {
             $rules = [
                 'name' => ['required', 'string', 'max:255'],
-                'type' => ['required', 'in:Person,Company'], // Pessoa fisica, pessoa juridica
+                'type' => ['required', 'in:Person,Company'],
                 'cpf_cnpj' => ['required', 'string', 'max:255'],
                 'state_registration' => ['nullable', 'string', 'max:255'],
-                'cep' => ['nullable', 'string', 'max:255'], // Colocou o cep ele precisa puxar as outras informações (API viacep)
+                'cep' => ['nullable', 'string', 'max:255'],
                 'state' => ['nullable', 'string', 'max:255'],
                 'city' => ['nullable', 'string', 'max:255'],
                 'address' => ['nullable', 'string', 'max:255'],
@@ -65,8 +68,8 @@ class ClientService
                 'fix_phone' => ['nullable', 'string', 'max:255'],
                 'whatsapp' => ['nullable', 'string', 'max:255'],
                 'email' => ['required', 'string', 'max:255'],
-                'user_id' => ['required', 'string', 'max:255'], // Responsável
-                'flag' => ['required', 'string', 'max:255'], // Bandeira: Verde, amarela e vermelha
+                'user_id' => ['required', 'string', 'max:255'],
+                'flag' => ['required', 'string', 'max:255'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
