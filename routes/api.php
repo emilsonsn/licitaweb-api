@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClientOccurrenceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
@@ -90,6 +91,14 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [TenderOccurrenceController::class, 'delete']);
     });
 
+    Route::prefix('client-occurrence')->group(function(){
+        Route::get('all', [ClientOccurrenceController::class, 'all']);
+        Route::get('search', [ClientOccurrenceController::class, 'search']);
+        Route::post('create', [ClientOccurrenceController::class, 'create']);
+        Route::patch('{id}', [ClientOccurrenceController::class, 'update']);
+        Route::delete('{id}', [ClientOccurrenceController::class, 'delete']);
+    });
+    
     Route::prefix('status')->group(function(){
         Route::get('all', [StatusController::class, 'all']);
         Route::get('search', [StatusController::class, 'search']);

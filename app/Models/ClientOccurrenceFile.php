@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class TenderOccurrenceFile extends Model
+class ClientOccurrenceFile extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -14,12 +14,12 @@ class TenderOccurrenceFile extends Model
     const UPDATED_AT = 'updated_at';
     const DELETED_AT = 'deleted_at';
 
-    public $table = 'tender_occurrence_files';
+    public $table = 'client_occurrence_files';
 
     public $fillable = [
         'filename',
         'path',
-        'tender_occurrence_id',
+        'client_occurrence_id',
     ];
 
     public function getPathAttribute($value){
@@ -27,6 +27,7 @@ class TenderOccurrenceFile extends Model
     }
 
     public function occurrence(){
-        return $this->belongsTo(TenderOccurrence::class);
+        return $this->belongsTo(ClientOccurrence::class);
     }
+
 }
