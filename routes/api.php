@@ -4,6 +4,7 @@ use App\Http\Controllers\ClientOccurrenceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductOccurrenceController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierOccurrenceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
@@ -118,6 +119,11 @@ Route::middleware('jwt')->group(function(){
     Route::prefix('product-occurrence')->group(function(){
         Route::get('search', [ProductOccurrenceController::class, 'search']);
         Route::post('create', [ProductOccurrenceController::class, 'create']);
+    });
+
+    Route::prefix('supplier-occurrence')->group(function(){
+        Route::get('search', [SupplierOccurrenceController::class, 'search']);
+        Route::post('create', [SupplierOccurrenceController::class, 'create']);
     });
     
     Route::prefix('status')->group(function(){
