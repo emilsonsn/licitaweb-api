@@ -29,6 +29,7 @@ class ClientService
             $search_term = $request->search_term;
             $flag = $request->flag ?? null;
             $user_id = $request->user_id ?? null;
+            $location = $request->location ?? null;
 
             $clients = Client::orderBy('id', 'desc');
 
@@ -37,6 +38,13 @@ class ClientService
                     ->orWhere('cpf_cnpj', 'LIKE', "%{$search_term}%")
                     ->orWhere('email', 'LIKE', "%{$search_term}%")
                     ->orWhere('whatsapp', 'LIKE', "%{$search_term}%");
+            }
+
+            if(isset($location)){
+                $clients->where('cep', 'LIKE', "%{$location}%")
+                    ->orWhere('state', 'LIKE', "%{$location}%")
+                    ->orWhere('city', 'LIKE', "%{$location}%")
+                    ->orWhere('address', 'LIKE', "%{$location}%");
             }
 
             if(isset($flag)){
