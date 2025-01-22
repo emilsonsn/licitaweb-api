@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services\ProductOccurrence;
+namespace App\Services\SupplierOccurrence;
 
-use App\Models\ProductOccurrence;
-use App\Models\ProductOccurrenceFile;
+use App\Models\SupplierOccurrence;
+use App\Models\SupplierOccurrenceFile;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class ProductOccurrenceService
+class SupplierOccurrenceService
 {
 
     public function search($request)
@@ -16,27 +16,27 @@ class ProductOccurrenceService
         try {
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term;
-            $product_id = $request->product_id;
+            $supplier_id = $request->supplier_id;
             $user_id = $request->user_id;
 
-            $productOccurrence = ProductOccurrence::with('files')->orderBy('id', 'desc');
+            $supplierOccurrence = SupplierOccurrence::with('files')->orderBy('id', 'desc');
 
             if(isset($search_term)){
-                $productOccurrence->where('title', 'LIKE', "%{$search_term}%")
+                $supplierOccurrence->where('title', 'LIKE', "%{$search_term}%")
                     ->orWhere('description', 'LIKE', "%{$search_term}%");
             }
 
-            if(isset($product_id)){
-                $productOccurrence->where('product_id', $product_id);
+            if(isset($supplier_id)){
+                $supplierOccurrence->where('supplier_id', $supplier_id);
             }
 
             if(isset($user_id)){
-                $productOccurrence->where('user_id', $user_id);
+                $supplierOccurrence->where('user_id', $user_id);
             }
 
-            $productOccurrence = $productOccurrence->paginate($perPage);
+            $supplierOccurrence = $supplierOccurrence->paginate($perPage);
 
-            return $productOccurrence;
+            return $supplierOccurrence;
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
@@ -48,7 +48,7 @@ class ProductOccurrenceService
             $rules = [
                 'title' => ['required', 'string', 'max:255'],
                 'description' => ['required', 'string'],                
-                'product_id' => ['required', 'integer'],
+                'supplier_id' => ['required', 'integer'],
                 'files' => ['nullable', 'array']
             ];
 
@@ -62,24 +62,24 @@ class ProductOccurrenceService
 
             $data['user_id'] = Auth::user()->id;
 
-            $productOccurrence = ProductOccurrence::create($data);
+            $supplierOccurrence = SupplierOccurrence::create($data);
 
             $files = [];
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
                     $path = $file->store('tenders/occurrences', 'public');
     
-                    $files[] = ProductOccurrenceFile::create([
+                    $files[] = SupplierOccurrenceFile::create([
                         'filename' => $file->getClientOriginalName(),
                         'path' => $path,
-                        'client_occurrence_id' => $productOccurrence->id,
+                        'client_occurrence_id' => $supplierOccurrence->id,
                     ]);
                 }
             }
 
-            $productOccurrence['files'] = $files;
+            $supplierOccurrence['files'] = $files;
 
-            return ['status' => true, 'data' => $productOccurrence];
+            return ['status' => true, 'data' => $supplierOccurrence];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
