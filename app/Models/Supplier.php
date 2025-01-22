@@ -16,6 +16,7 @@ class Supplier extends Model
     public $table = 'suppliers';
 
     public $fillable = [
+        'user_id',
         'name',
         'cpf_or_cnpj',
         'state_registration',
@@ -34,5 +35,9 @@ class Supplier extends Model
     public function products()
     {
         return $this->hasMany(Products::class);
+    }
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 }

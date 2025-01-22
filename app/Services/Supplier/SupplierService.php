@@ -58,6 +58,7 @@ class SupplierService
                 'landline_phone' => 'nullable|string',
                 'mobile_phone' => 'required|string',
                 'email' => 'required|email|unique:suppliers',
+                'user_id' => 'nullable|integer',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -66,7 +67,11 @@ class SupplierService
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
             }
 
-            $supplier = Supplier::create($validator->validated());
+            $data = $validator->validated();
+
+            $data['user'] = isset($data['user']) ? $data['user'] : Auth::user()->id;            
+
+            $supplier = Supplier::create($data);
 
             Log::create([
                 'description' => "Created a supplier",
@@ -109,13 +114,17 @@ class SupplierService
             $supplier = Supplier::find($supplier_id);
 
             if (!$supplier) {
-                throw new Exception('Supplier not found', 400);
+                throw new Exception('Fornecedor não encontrado', 400);
             }
 
-            $supplier->update($validator->validated());
+            $data = $validator->validated();
+
+            $data['user'] = isset($data['user']) ? $data['user'] : Auth::user()->id;
+
+            $supplier->update($data);
 
             Log::create([
-                'description' => "Updated a supplier",
+                'description' => "Fornecedor atualizado",
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -131,14 +140,14 @@ class SupplierService
         try {
             $supplier = Supplier::find($supplier_id);
 
-            if (!$supplier) throw new Exception('Supplier not found');
+            if (!$supplier) throw new Exception('Fornecedor não encontrado');
 
             $supplierId = $supplier->id;
             $supplierName = $supplier->name;
             $supplier->delete();
 
             Log::create([
-                'description' => "Deleted a supplier",
+                'description' => "Fornecedor deletado",
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $supplierName]),
             ]);
