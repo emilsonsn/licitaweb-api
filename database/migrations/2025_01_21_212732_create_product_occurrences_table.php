@@ -11,29 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('client_occurrences', function (Blueprint $table) {
+        Schema::create('product_occurrences', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->unsignedBigInteger('client_id');
+            $table->unsignedBigInteger('product_id');
             $table->timestamps();
 
-            $table->foreign('client_id')
+            $table->foreign('product_id')
                 ->references('id')
-                ->on('clients');
+                ->on('products');
         });
 
-        Schema::create('client_occurrence_files', function (Blueprint $table) {
+        Schema::create('product_occurrence_files', function (Blueprint $table) {
             $table->id();
             $table->string('filename');
             $table->string('path');
-            $table->unsignedBigInteger('client_occurrence_id');
+            $table->unsignedBigInteger('product_occurrence_id');
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('client_occurrence_id')
+            $table->foreign('product_occurrence_id')
                 ->references('id')
-                ->on('client_occurrences');
+                ->on('product_occurrences');
 
         });
     }
@@ -43,7 +43,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('client_occurrences');
-        Schema::dropIfExists('client_occurrence_files');
+        Schema::dropIfExists('product_occurrences');
+        Schema::dropIfExists('product_occurrence_files');
     }
 };
