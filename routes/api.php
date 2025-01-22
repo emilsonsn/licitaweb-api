@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientOccurrenceController;
+use App\Http\Controllers\SupplierController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
@@ -81,6 +82,14 @@ Route::middleware('jwt')->group(function(){
         Route::post('create', [ClientController::class, 'create']);
         Route::patch('{id}', [ClientController::class, 'update']);
         Route::delete('{id}', [ClientController::class, 'delete']);
+    });
+
+    Route::prefix('supplier')->group(function(){
+        Route::get('all', [SupplierController::class, 'all']);
+        Route::get('search', [SupplierController::class, 'search']);
+        Route::post('create', [SupplierController::class, 'create']);
+        Route::patch('{id}', [SupplierController::class, 'update']);
+        Route::delete('{id}', [SupplierController::class, 'delete']);
     });
 
     Route::prefix('tender-occurrence')->group(function(){
