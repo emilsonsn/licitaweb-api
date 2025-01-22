@@ -17,6 +17,7 @@ class Supplier extends Model
 
     public $fillable = [
         'user_id',
+        'person_type',
         'name',
         'cpf_or_cnpj',
         'state_registration',

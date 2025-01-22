@@ -59,6 +59,7 @@ class SupplierService
                 'mobile_phone' => 'required|string',
                 'email' => 'required|email|unique:suppliers',
                 'user_id' => 'nullable|integer',
+                'person_type' => 'required|string|in:Person,Company'
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -102,7 +103,9 @@ class SupplierService
                 'zip_code' => 'required|string',
                 'landline_phone' => 'nullable|string',
                 'mobile_phone' => 'required|string',
-                'email' => 'required|email|unique:suppliers,email,' . $supplier_id,
+                'email' => 'required|email|unique:suppliers',
+                'user_id' => 'nullable|integer',
+                'person_type' => 'required|string|in:Person,Company'
             ];
 
             $validator = Validator::make($request->all(), $rules);
