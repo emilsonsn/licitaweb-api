@@ -2,52 +2,53 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\Product\ProductService;
 use App\Services\Supplier\SupplierService;
 use Illuminate\Http\Request;
 
-class ProductsController extends Controller
+class ProductController extends Controller
 {
-    private $supplierService;
+    private $productService;
 
-    public function __construct(SupplierService $supplierService) {
-        $this->supplierService = $supplierService;
+    public function __construct(ProductService $productService) {
+        $this->productService = $productService;
     }
 
     public function all() {
-        $result = $this->supplierService->all();
+        $result = $this->productService->all();
         return $this->response($result);
     }
 
     public function search(Request $request) {
-        $result = $this->supplierService->search($request);
+        $result = $this->productService->search($request);
         return $this->response($result);
     }
 
     public function create(Request $request) {
-        $result = $this->supplierService->create($request);
+        $result = $this->productService->create($request);
 
         if ($result['status']) {
-            $result['message'] = "Supplier created successfully";
+            $result['message'] = "Produto criado com sucesso";
         }
 
         return $this->response($result);
     }
 
     public function update(Request $request, $id) {
-        $result = $this->supplierService->update($request, $id);
+        $result = $this->productService->update($request, $id);
 
         if ($result['status']) {
-            $result['message'] = "Supplier updated successfully";
+            $result['message'] = "Produto atualizado com sucesso";
         }
 
         return $this->response($result);
     }
 
     public function delete($id) {
-        $result = $this->supplierService->delete($id);
+        $result = $this->productService->delete($id);
 
         if ($result['status']) {
-            $result['message'] = "Supplier deleted successfully";
+            $result['message'] = "Produto deletado com sucesso";
         }
 
         return $this->response($result);
