@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClientOccurrenceController;
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductOccurrenceController;
 use App\Http\Controllers\SupplierController;
@@ -153,5 +154,17 @@ Route::middleware('jwt')->group(function(){
         Route::post('create', [TaskController::class, 'create']);
         Route::patch('{id}', [TaskController::class, 'update']);
         Route::delete('{id}', [TaskController::class, 'delete']);
+    });
+
+    Route::prefix('contract')->group(function(){
+        Route::get('all', [ContractController::class, 'all']);
+        Route::get('search', [ContractController::class, 'search']);
+        Route::post('create', [ContractController::class, 'create']);
+        Route::patch('{id}', [ContractController::class, 'update']);
+        Route::delete('{id}', [ContractController::class, 'delete']);
+    
+        Route::post('{contractId}/payment', [ContractController::class, 'createPayment']);
+        Route::delete('payment/{paymentId}', [ContractController::class, 'deletePayment']);
+        Route::delete('product/{contractProductId}', [ContractController::class, 'deleteContractProduct']);
     });
 });
