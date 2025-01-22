@@ -3,10 +3,10 @@
 namespace App\Services\Tender;
 
 use App\Models\Log;
+use App\Models\Status;
 use App\Models\Tender;
 use App\Models\TenderAttachment;
 use App\Models\TenderItem;
-use App\Models\TenderStatus;
 use App\Models\TenderTask;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -148,7 +148,7 @@ class TenderService
                 'client_id' => 'nullable|integer|exists:clients,id',
             ];
 
-            if(!TenderStatus::count()){
+            if(!Status::count()){
                 throw new Exception('Crie uma etapa antes de cadastrar um edital', 400);
             }
 
