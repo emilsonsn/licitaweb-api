@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientOccurrenceController;
+use App\Http\Controllers\CommitmentNoteController;
 use App\Http\Controllers\ContractController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ModalityController;
@@ -153,6 +154,15 @@ Route::middleware('jwt')->group(function () {
         Route::post('create', [TaskController::class, 'create']);
         Route::patch('{id}', [TaskController::class, 'update']);
         Route::delete('{id}', [TaskController::class, 'delete']);
+    });
+
+    Route::prefix('commitment-note')->group(function () {
+        Route::get('all', [CommitmentNoteController::class, 'all']);
+        Route::get('search', [CommitmentNoteController::class, 'search']);
+        Route::post('create', [CommitmentNoteController::class, 'create']);
+        Route::patch('{id}', [CommitmentNoteController::class, 'update']);
+        Route::delete('{id}', [CommitmentNoteController::class, 'delete']);
+        Route::delete('product/{commitment_product_id}', [CommitmentNoteController::class, 'deleteProduct']);
     });
 
     Route::prefix('contract')->group(function () {
