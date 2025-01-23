@@ -31,7 +31,7 @@ class ClientService
             $user_id = $request->user_id ?? null;
             $location = $request->location ?? null;
 
-            $clients = Client::orderBy('id', 'desc');
+            $clients = Client::with('user')->orderBy('id', 'desc');
 
             if(isset($search_term)){
                 $clients->where('name', 'LIKE', "%{$search_term}%")
