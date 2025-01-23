@@ -35,17 +35,21 @@ class ClientService
             $clients = Client::with('user')->orderBy('id', 'desc');
 
             if (isset($search_term)) {
-                $clients->where('name', 'LIKE', "%{$search_term}%")
+                $clients->where(function($query) use ($search_term){
+                    $query->where('name', 'LIKE', "%{$search_term}%")
                     ->orWhere('cpf_cnpj', 'LIKE', "%{$search_term}%")
                     ->orWhere('email', 'LIKE', "%{$search_term}%")
                     ->orWhere('whatsapp', 'LIKE', "%{$search_term}%");
+                });
             }
 
             if (isset($location)) {
-                $clients->where('cep', 'LIKE', "%{$location}%")
+                $clients->where(function($query) use ($location){
+                    $query->where('cep', 'LIKE', "%{$location}%")
                     ->orWhere('state', 'LIKE', "%{$location}%")
                     ->orWhere('city', 'LIKE', "%{$location}%")
                     ->orWhere('address', 'LIKE', "%{$location}%");
+                });
             }
 
             if (isset($flag)) {
