@@ -20,7 +20,7 @@ class SupplierController extends Controller
 
     public function search(Request $request) {
         $result = $this->supplierService->search($request);
-        return $this->response($result);
+        return $result;
     }
 
     public function create(Request $request) {
