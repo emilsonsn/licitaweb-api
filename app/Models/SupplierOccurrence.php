@@ -11,7 +11,9 @@ class SupplierOccurrence extends Model
     use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
+
     const DELETED_AT = 'deleted_at';
 
     public $table = 'supplier_occurrences';
@@ -23,15 +25,18 @@ class SupplierOccurrence extends Model
         'supplier_id',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function supplier(){
+    public function supplier()
+    {
         return $this->belongsTo(Supplier::class);
     }
 
-    public function files(){
+    public function files()
+    {
         return $this->hasMany(SupplierOccurrenceFile::class);
     }
 }

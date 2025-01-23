@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductOccurrenceService
 {
-
     public function search($request)
     {
         try {
@@ -21,16 +20,16 @@ class ProductOccurrenceService
 
             $productOccurrence = ProductOccurrence::with('files')->orderBy('id', 'desc');
 
-            if(isset($search_term)){
+            if (isset($search_term)) {
                 $productOccurrence->where('title', 'LIKE', "%{$search_term}%")
                     ->orWhere('description', 'LIKE', "%{$search_term}%");
             }
 
-            if(isset($product_id)){
+            if (isset($product_id)) {
                 $productOccurrence->where('product_id', $product_id);
             }
 
-            if(isset($user_id)){
+            if (isset($user_id)) {
                 $productOccurrence->where('user_id', $user_id);
             }
 
@@ -47,9 +46,9 @@ class ProductOccurrenceService
         try {
             $rules = [
                 'title' => ['required', 'string', 'max:255'],
-                'description' => ['required', 'string'],                
+                'description' => ['required', 'string'],
                 'product_id' => ['required', 'integer'],
-                'files' => ['nullable', 'array']
+                'files' => ['nullable', 'array'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -68,7 +67,7 @@ class ProductOccurrenceService
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
                     $path = $file->store('tenders/occurrences', 'public');
-    
+
                     $files[] = ProductOccurrenceFile::create([
                         'filename' => $file->getClientOriginalName(),
                         'path' => $path,

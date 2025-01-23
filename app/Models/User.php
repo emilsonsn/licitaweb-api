@@ -13,6 +13,7 @@ class User extends Authenticatable implements JWTSubject
     use HasApiTokens, HasFactory, Notifiable;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
 
     public $table = 'users';
@@ -31,7 +32,7 @@ class User extends Authenticatable implements JWTSubject
         'birth_date',
         'is_active',
         'role',
-        'photo'
+        'photo',
     ];
 
     /**
@@ -64,7 +65,8 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function logs(){
+    public function logs()
+    {
         return $this->hasMany(Log::class);
     }
 }

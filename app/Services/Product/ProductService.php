@@ -15,6 +15,7 @@ class ProductService
     {
         try {
             $products = Product::get();
+
             return ['status' => true, 'data' => $products];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -31,8 +32,8 @@ class ProductService
 
             if (isset($search_term)) {
                 $products->where('name', 'LIKE', "%{$search_term}%")
-                         ->orWhere('sku', 'LIKE', "%{$search_term}%")
-                         ->orWhere('category', 'LIKE', "%{$search_term}%");
+                    ->orWhere('sku', 'LIKE', "%{$search_term}%")
+                    ->orWhere('category', 'LIKE', "%{$search_term}%");
             }
 
             return $products->paginate($perPage);
@@ -70,7 +71,7 @@ class ProductService
             $product = Product::create($validator->validated());
 
             Log::create([
-                'description' => "Created a product",
+                'description' => 'Created a product',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -78,6 +79,7 @@ class ProductService
             return ['status' => true, 'data' => $product];
         } catch (Exception $error) {
             DB::rollBack();
+
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
@@ -87,7 +89,7 @@ class ProductService
         try {
             $rules = [
                 'name' => 'required|string',
-                'sku' => 'required|string|unique:products,sku,' . $product_id,
+                'sku' => 'required|string|unique:products,sku,'.$product_id,
                 'category' => 'required|string',
                 'detailed_description' => 'nullable|string',
                 'tire_size' => 'nullable|string',
@@ -110,14 +112,14 @@ class ProductService
 
             $product = Product::find($product_id);
 
-            if (!$product) {
+            if (! $product) {
                 throw new Exception('Product not found', 400);
             }
 
             $product->update($validator->validated());
 
             Log::create([
-                'description' => "Updated a product",
+                'description' => 'Updated a product',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -133,14 +135,16 @@ class ProductService
         try {
             $product = Product::find($product_id);
 
-            if (!$product) throw new Exception('Product not found');
+            if (! $product) {
+                throw new Exception('Product not found');
+            }
 
             $productId = $product->id;
             $productName = $product->name;
             $product->delete();
 
             Log::create([
-                'description' => "Deleted a product",
+                'description' => 'Deleted a product',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $productName]),
             ]);

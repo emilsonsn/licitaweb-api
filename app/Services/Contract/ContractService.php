@@ -2,10 +2,10 @@
 
 namespace App\Services\Contract;
 
-use App\Models\ContractProduct;
-use App\Models\Log;
 use App\Models\Contract;
 use App\Models\ContractPayment;
+use App\Models\ContractProduct;
+use App\Models\Log;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +17,7 @@ class ContractService
     {
         try {
             $contracts = Contract::get();
+
             return ['status' => true, 'data' => $contracts];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -33,8 +34,8 @@ class ContractService
 
             if (isset($search_term)) {
                 $contracts->where('contract_number', 'LIKE', "%{$search_term}%")
-                          ->orWhere('contract_object', 'LIKE', "%{$search_term}%")
-                          ->orWhere('status', 'LIKE', "%{$search_term}%");
+                    ->orWhere('contract_object', 'LIKE', "%{$search_term}%")
+                    ->orWhere('status', 'LIKE', "%{$search_term}%");
             }
 
             return $contracts->paginate($perPage);
@@ -58,7 +59,7 @@ class ContractService
                 'total_contract_value' => 'required|numeric',
                 'payment_conditions' => 'required|string',
                 'observations' => 'nullable|string',
-                'products' => 'nullable|array'
+                'products' => 'nullable|array',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -69,18 +70,18 @@ class ContractService
 
             $contract = Contract::create($validator->validated());
 
-            if(isset($request->products)){
-                foreach($request->products as $product){
+            if (isset($request->products)) {
+                foreach ($request->products as $product) {
                     ContractProduct::create([
                         'contract_id' => $contract->id,
                         'product_id' => $product['product_id'],
-                        'quantity' => $product['quantity']
+                        'quantity' => $product['quantity'],
                     ]);
                 }
             }
 
             Log::create([
-                'description' => "Contrato criado",
+                'description' => 'Contrato criado',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -88,6 +89,7 @@ class ContractService
             return ['status' => true, 'data' => $contract];
         } catch (Exception $error) {
             DB::rollBack();
+
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
@@ -96,7 +98,7 @@ class ContractService
     {
         try {
             $rules = [
-                'contract_number' => 'required|string|unique:contracts,contract_number,' . $contract_id,
+                'contract_number' => 'required|string|unique:contracts,contract_number,'.$contract_id,
                 'client_id' => 'required|exists:clients,id',
                 'tender_id' => 'nullable|exists:tenders,id',
                 'contract_object' => 'required|string',
@@ -107,7 +109,7 @@ class ContractService
                 'total_contract_value' => 'required|numeric',
                 'payment_conditions' => 'required|string',
                 'observations' => 'nullable|string',
-                'products' => 'nullable|array'
+                'products' => 'nullable|array',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -118,27 +120,27 @@ class ContractService
 
             $contractToUpdate = Contract::find($contract_id);
 
-            if (!$contractToUpdate) {
+            if (! $contractToUpdate) {
                 throw new Exception('Contrato não encontrado', 400);
             }
 
             $contractToUpdate->update($validator->validated());
 
-            if(isset($request->products)){
-                foreach($request->products as $product){
+            if (isset($request->products)) {
+                foreach ($request->products as $product) {
                     ContractProduct::updateOrCreate(
                         [
                             'product_id' => $product['product_id'],
                             'contract_id' => $contractToUpdate->id,
                         ],
                         [
-                        'quantity' => $product['quantity']
-                    ]);
+                            'quantity' => $product['quantity'],
+                        ]);
                 }
             }
 
             Log::create([
-                'description' => "Contrato atualizado",
+                'description' => 'Contrato atualizado',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -154,14 +156,16 @@ class ContractService
         try {
             $contract = Contract::find($contract_id);
 
-            if (!$contract) throw new Exception('Contrato não encontrado');
+            if (! $contract) {
+                throw new Exception('Contrato não encontrado');
+            }
 
             $contractId = $contract->id;
             $contractName = $contract->name;
             $contract->delete();
 
             Log::create([
-                'description' => "Contrato deletado",
+                'description' => 'Contrato deletado',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $contractName]),
             ]);
@@ -177,7 +181,7 @@ class ContractService
         try {
             $rules = [
                 'amount_received' => 'required|numeric|min:0.01',
-                'contract_id' => 'required|integer'
+                'contract_id' => 'required|integer',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -199,7 +203,9 @@ class ContractService
         try {
             $payment = ContractPayment::find($payment_id);
 
-            if (!$payment) throw new Exception('Pagamento não encontrado');
+            if (! $payment) {
+                throw new Exception('Pagamento não encontrado');
+            }
 
             $payment->delete();
 
@@ -214,7 +220,9 @@ class ContractService
         try {
             $contractProduct = ContractProduct::find($contractProductId);
 
-            if (!$contractProduct) throw new Exception('Produto não vinculado ao contrato');
+            if (! $contractProduct) {
+                throw new Exception('Produto não vinculado ao contrato');
+            }
 
             $contractProduct->delete();
 

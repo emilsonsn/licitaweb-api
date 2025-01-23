@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class SupplierOccurrenceService
 {
-
     public function search($request)
     {
         try {
@@ -21,16 +20,16 @@ class SupplierOccurrenceService
 
             $supplierOccurrence = SupplierOccurrence::with('files')->orderBy('id', 'desc');
 
-            if(isset($search_term)){
+            if (isset($search_term)) {
                 $supplierOccurrence->where('title', 'LIKE', "%{$search_term}%")
                     ->orWhere('description', 'LIKE', "%{$search_term}%");
             }
 
-            if(isset($supplier_id)){
+            if (isset($supplier_id)) {
                 $supplierOccurrence->where('supplier_id', $supplier_id);
             }
 
-            if(isset($user_id)){
+            if (isset($user_id)) {
                 $supplierOccurrence->where('user_id', $user_id);
             }
 
@@ -47,9 +46,9 @@ class SupplierOccurrenceService
         try {
             $rules = [
                 'title' => ['required', 'string', 'max:255'],
-                'description' => ['required', 'string'],                
+                'description' => ['required', 'string'],
                 'supplier_id' => ['required', 'integer'],
-                'files' => ['nullable', 'array']
+                'files' => ['nullable', 'array'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -68,7 +67,7 @@ class SupplierOccurrenceService
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
                     $path = $file->store('tenders/occurrences', 'public');
-    
+
                     $files[] = SupplierOccurrenceFile::create([
                         'filename' => $file->getClientOriginalName(),
                         'path' => $path,

@@ -15,6 +15,7 @@ class TaskService
     {
         try {
             $tasks = TenderTask::with('user')->get();
+
             return ['status' => true, 'data' => $tasks];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -50,7 +51,7 @@ class TaskService
                 $tasks->where('user_id', $user_id);
             }
 
-            if($status){
+            if ($status) {
                 $tasks->where('status', $status);
             }
 
@@ -71,9 +72,9 @@ class TaskService
                 'tender_id' => 'required|integer',
                 'user_id' => 'nullable|integer',
             ];
-    
+
             $validator = Validator::make($request->all(), $rules);
-    
+
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
             }
@@ -81,18 +82,19 @@ class TaskService
             $data = $validator->validated();
 
             $data['user_id'] = $data['user_id'] ?? Auth::user()->id;
-        
+
             $task = TenderTask::create($data);
 
             Log::create([
-                'description' => "Criou um tarefa",
+                'description' => 'Criou um tarefa',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
-    
+
             return ['status' => true, 'data' => $task];
         } catch (Exception $error) {
             DB::rollBack();
+
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
@@ -117,7 +119,7 @@ class TaskService
 
             $task = TenderTask::find($task_id);
 
-            if (!$task) {
+            if (! $task) {
                 throw new Exception('Tarefa não encontrada', 400);
             }
 
@@ -128,7 +130,7 @@ class TaskService
             $task->update($data);
 
             Log::create([
-                'description' => "Atualizou um tarefa",
+                'description' => 'Atualizou um tarefa',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -144,14 +146,16 @@ class TaskService
         try {
             $task = TenderTask::find($task_id);
 
-            if (!$task) throw new Exception('Tarefa não encontrada');
+            if (! $task) {
+                throw new Exception('Tarefa não encontrada');
+            }
 
             $taskId = $task->id;
             $taskName = $task->name;
             $task->delete();
 
             Log::create([
-                'description' => "Apagou um tarefa",
+                'description' => 'Apagou um tarefa',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['Nome' => $taskName]),
             ]);

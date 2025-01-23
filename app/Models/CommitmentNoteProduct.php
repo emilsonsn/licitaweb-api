@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class SupplierOccurrenceFile extends Model
+class CommitmentNoteProduct extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -16,21 +16,21 @@ class SupplierOccurrenceFile extends Model
 
     const DELETED_AT = 'deleted_at';
 
-    public $table = 'supplier_occurrence_files';
+    public $table = 'commitment_note_products';
 
     public $fillable = [
-        'filename',
-        'path',
-        'supplier_occurrence_id',
+        'commitment_note_id',
+        'product_id',
+        'quantity',
     ];
 
-    public function getPathAttribute($value)
+    public function commitmentNote()
     {
-        return $value ? asset('storage/'.$value) : null;
+        return $this->belongsTo(CommitmentNote::class);
     }
 
-    public function occurrence()
+    public function product()
     {
-        return $this->belongsTo(SupplierOccurrence::class);
+        return $this->belongsTo(Product::class);
     }
 }

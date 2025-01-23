@@ -15,6 +15,7 @@ class ModalityService
     {
         try {
             $modalities = Modality::get();
+
             return ['status' => true, 'data' => $modalities];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -30,9 +31,9 @@ class ModalityService
             $modalities = Modality::query();
 
             if (isset($search_term)) {
-                $modalities->where('name', 'LIKE', "%{$search_term}%")                
-                        ->orWhere('description', 'LIKE', "%{$search_term}%")
-                        ->orWhere('external_id', 'LIKE', "%{$search_term}%");
+                $modalities->where('name', 'LIKE', "%{$search_term}%")
+                    ->orWhere('description', 'LIKE', "%{$search_term}%")
+                    ->orWhere('external_id', 'LIKE', "%{$search_term}%");
             }
 
             return $modalities->paginate($perPage);
@@ -49,24 +50,25 @@ class ModalityService
                 'description' => 'nullable|string',
                 'external_id' => 'nullable|string',
             ];
-    
+
             $validator = Validator::make($request->all(), $rules);
-    
+
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
             }
-        
+
             $modality = Modality::create($validator->validated());
 
             Log::create([
-                'description' => "Criou um modalidade",
+                'description' => 'Criou um modalidade',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
-    
+
             return ['status' => true, 'data' => $modality];
         } catch (Exception $error) {
             DB::rollBack();
+
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
@@ -88,14 +90,14 @@ class ModalityService
 
             $modality = Modality::find($modality_id);
 
-            if (!$modality) {
+            if (! $modality) {
                 throw new Exception('Modalidade não encontrada', 400);
             }
 
             $modality->update($validator->validated());
 
             Log::create([
-                'description' => "Atualizou um modalidade",
+                'description' => 'Atualizou um modalidade',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -111,14 +113,16 @@ class ModalityService
         try {
             $modality = Modality::find($modality_id);
 
-            if (!$modality) throw new Exception('Modalidade não encontrada');
+            if (! $modality) {
+                throw new Exception('Modalidade não encontrada');
+            }
 
             $modalityId = $modality->id;
             $modalityName = $modality->name;
             $modality->delete();
 
             Log::create([
-                'description' => "Atualizou um modalidade",
+                'description' => 'Atualizou um modalidade',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $modalityName]),
             ]);

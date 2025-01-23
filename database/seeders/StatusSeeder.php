@@ -13,25 +13,25 @@ class StatusSeeder extends Seeder
     public function run(): void
     {
         $tenderStatus = [
-            [                
+            [
                 'name' => 'Pendente',
-                'color' => '#FFB400'
+                'color' => '#FFB400',
             ],
             [
                 'name' => 'Em andamento',
-                'color' => '#007BFF'
+                'color' => '#007BFF',
             ],
             [
                 'name' => 'Arrematado',
-                'color' => '#11d376'
+                'color' => '#11d376',
             ],
             [
                 'name' => 'Finalizado',
-                'color' => '#28A745'
+                'color' => '#28A745',
             ],
-        ];        
+        ];
 
-        foreach($tenderStatus as $status){
+        foreach ($tenderStatus as $status) {
             Status::updateOrcreate($status, $status);
         }
     }

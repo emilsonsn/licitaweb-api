@@ -11,7 +11,9 @@ class Contract extends Model
     use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
+
     const DELETED_AT = 'deleted_at';
 
     public $table = 'contracts';
@@ -41,7 +43,8 @@ class Contract extends Model
         return $this->belongsTo(Tender::class);
     }
 
-    public function payments(){
+    public function payments()
+    {
         return $this->hasMany(ContractPayment::class);
 
     }

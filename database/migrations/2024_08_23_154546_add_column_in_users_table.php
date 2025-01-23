@@ -43,8 +43,8 @@ return new class extends Migration
         });
 
         Schema::table('users', function (Blueprint $table) {
-        
-            $table->dropColumn(['phone' ,'whatsapp' ,'cpf_cnpj' ,'birth_date']);        
+
+            $table->dropColumn(['phone', 'whatsapp', 'cpf_cnpj', 'birth_date']);
         });
     }
 };

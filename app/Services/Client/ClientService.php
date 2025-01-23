@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientService
 {
-    public function all(){
+    public function all()
+    {
         try {
             $clients = Client::orderBy('id', 'desc')
                 ->get();
 
             return [
-                'status' =>  true,
-                'data'   => $clients
+                'status' => true,
+                'data' => $clients,
             ];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -33,25 +34,25 @@ class ClientService
 
             $clients = Client::with('user')->orderBy('id', 'desc');
 
-            if(isset($search_term)){
+            if (isset($search_term)) {
                 $clients->where('name', 'LIKE', "%{$search_term}%")
                     ->orWhere('cpf_cnpj', 'LIKE', "%{$search_term}%")
                     ->orWhere('email', 'LIKE', "%{$search_term}%")
                     ->orWhere('whatsapp', 'LIKE', "%{$search_term}%");
             }
 
-            if(isset($location)){
+            if (isset($location)) {
                 $clients->where('cep', 'LIKE', "%{$location}%")
                     ->orWhere('state', 'LIKE', "%{$location}%")
                     ->orWhere('city', 'LIKE', "%{$location}%")
                     ->orWhere('address', 'LIKE', "%{$location}%");
             }
 
-            if(isset($flag)){
+            if (isset($flag)) {
                 $clients->where('flag', $flag);
             }
 
-            if(isset($user_id)){
+            if (isset($user_id)) {
                 $clients->where('user_id', $user_id);
             }
 
@@ -88,7 +89,7 @@ class ClientService
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];;
+                return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
             }
 
             $client = Client::create($validator->validated());
@@ -98,7 +99,6 @@ class ClientService
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
-
 
     public function update($request, $user_id)
     {
@@ -124,11 +124,15 @@ class ClientService
 
             $validator = Validator::make($request->all(), $rules);
 
-            if ($validator->fails()) throw new Exception($validator->errors());
+            if ($validator->fails()) {
+                throw new Exception($validator->errors());
+            }
 
             $clientToUpdate = Client::find($user_id);
 
-            if(!isset($clientToUpdate)) throw new Exception('Cliente não encontrado');
+            if (! isset($clientToUpdate)) {
+                throw new Exception('Cliente não encontrado');
+            }
 
             $clientToUpdate->update($validator->validated());
 
@@ -138,17 +142,20 @@ class ClientService
         }
     }
 
-    public function delete($id){
-        try{
+    public function delete($id)
+    {
+        try {
             $client = Client::find($id);
 
-            if(!$client) throw new Exception('Cliente não encontrado');
+            if (! $client) {
+                throw new Exception('Cliente não encontrado');
+            }
 
             $clientName = $client->name;
             $client->delete();
 
             return ['status' => true, 'data' => $clientName];
-        }catch(Exception $error) {
+        } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }

@@ -20,6 +20,7 @@ class TenderService
     {
         try {
             $tenders = Tender::with('modality', 'user', 'status')->get();
+
             return ['status' => true, 'data' => $tenders];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -52,16 +53,16 @@ class TenderService
 
             if (isset($search_term)) {
                 $tenders->where('number', 'LIKE', "%{$search_term}%")
-                        ->orWhere('organ', 'LIKE', "%{$search_term}%");
+                    ->orWhere('organ', 'LIKE', "%{$search_term}%");
             }
 
-            if(isset($is_contract)){
+            if (isset($is_contract)) {
                 $tenders->where('is_contract', $is_contract);
             }
 
             if (isset($external_id)) {
                 $tenders->where('number', $external_id)
-                        ->orWhere('external_id', $external_id);
+                    ->orWhere('external_id', $external_id);
             }
 
             if (isset($user_id)) {
@@ -72,24 +73,25 @@ class TenderService
                 $tenders->where('modality_id', $modality_id);
             }
 
-            if(isset($status)){
+            if (isset($status)) {
                 $status = explode(',', $status);
                 $tenders->whereIn('status', $status);
             }
 
-            if(isset($start_contest_date) && isset($end_contest_date)){
-                if ($start_contest_date == $end_contest_date)
+            if (isset($start_contest_date) && isset($end_contest_date)) {
+                if ($start_contest_date == $end_contest_date) {
                     $tenders->whereDate('contest_date', $start_contest_date);
-                else
+                } else {
                     $tenders->whereBetween('contest_date', [$start_contest_date, $end_contest_date]);
-            }elseif (isset($start_contest_date)){
+                }
+            } elseif (isset($start_contest_date)) {
                 $tenders->whereDate('contest_date', '>', $start_contest_date);
-            }elseif (isset($end_contest_date)){
-                $tenders->whereDate('contest_date', '<' ,$end_contest_date);
+            } elseif (isset($end_contest_date)) {
+                $tenders->whereDate('contest_date', '<', $end_contest_date);
             }
 
-            if(isset($status_id)){
-                $tenders->wherehas('tenderStatus', function($query) use($status_id){
+            if (isset($status_id)) {
+                $tenders->wherehas('tenderStatus', function ($query) use ($status_id) {
                     $query->where('status_id', $status_id);
                 });
             }
@@ -104,7 +106,7 @@ class TenderService
                 'per_page' => $paginatedResults->perPage(),
                 'current_page' => $paginatedResults->currentPage(),
                 'last_page' => $paginatedResults->lastPage(),
-                'total_value' => $totalValue
+                'total_value' => $totalValue,
             ];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -114,16 +116,17 @@ class TenderService
     public function getById($id)
     {
         try {
-            $tender = Tender::with('items', 'attachments', 'status')->find($id);  
+            $tender = Tender::with('items', 'attachments', 'status')->find($id);
 
-            if(!isset($tender)) throw new Exception("Edital não encontrado");
-    
+            if (! isset($tender)) {
+                throw new Exception('Edital não encontrado');
+            }
+
             return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
-    
 
     public function create($request)
     {
@@ -149,7 +152,7 @@ class TenderService
                 'client_id' => 'nullable|integer|exists:clients,id',
             ];
 
-            if(!Status::count()){
+            if (! Status::count()) {
                 throw new Exception('Crie uma etapa antes de cadastrar um edital', 400);
             }
 
@@ -165,7 +168,7 @@ class TenderService
             $tender = Tender::create($validator->validated());
 
             $items = [];
-            if($request->items){
+            if ($request->items) {
                 foreach ($request->items as $itemData) {
                     $itemData = json_decode($itemData, true);
                     $items[] = TenderItem::create([
@@ -181,8 +184,8 @@ class TenderService
             if ($request->attachments) {
                 foreach ($request->attachments as $attachment) {
                     $path = $attachment->store('tenders/attachments', 'public');
-                    $fullPath = 'storage/' . $path;
-    
+                    $fullPath = 'storage/'.$path;
+
                     $attachments[] = TenderAttachment::create([
                         'tender_id' => $tender->id,
                         'filename' => $attachment->getClientOriginalName(),
@@ -204,7 +207,7 @@ class TenderService
             $tender['items'] = $items;
 
             Log::create([
-                'description' => "Criou um edital",
+                'description' => 'Criou um edital',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -212,6 +215,7 @@ class TenderService
             return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {
             DB::rollBack();
+
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
@@ -251,14 +255,14 @@ class TenderService
 
             $tender = Tender::find($tender_id);
 
-            if (!$tender) {
+            if (! $tender) {
                 throw new Exception('Licitação não encontrada', 400);
             }
 
             DB::beginTransaction();
 
             $tender->update($validator->validated());
-            
+
             $items = [];
             if ($request->items) {
                 foreach ($request->items as $itemData) {
@@ -268,11 +272,11 @@ class TenderService
                             'id' => $itemData['id'] ?? null,
                         ],
                         [
-                        'item' => $itemData['item'],
-                        'tender_id' => $tender->id,
-                        'quantity' => $itemData['quantity'],
-                        'unit_value' => $itemData['unit_value'],
-                    ]);
+                            'item' => $itemData['item'],
+                            'tender_id' => $tender->id,
+                            'quantity' => $itemData['quantity'],
+                            'unit_value' => $itemData['unit_value'],
+                        ]);
                 }
             }
 
@@ -280,31 +284,31 @@ class TenderService
             if ($request->attachments) {
                 foreach ($request->attachments as $attachment) {
                     $path = $attachment->store('tenders/attachments', 'public');
-                    $fullPath = 'storage/' . $path;
-    
+                    $fullPath = 'storage/'.$path;
+
                     $attachments[] = TenderAttachment::updateOrCreate(
-                    [
-                        'tender_id' => $tender->id,
-                        'filename' => $attachment->getClientOriginalName(),
-                        'path' => $fullPath,
-                        'user_id' => $request->user_id,
-                    ]);
+                        [
+                            'tender_id' => $tender->id,
+                            'filename' => $attachment->getClientOriginalName(),
+                            'path' => $fullPath,
+                            'user_id' => $request->user_id,
+                        ]);
                 }
             }
 
             TenderStatus::updateOrcreate(
-            [
-                'tender_id' => $tender->id,
-            ],
-            [
-                'status_id' => $request->status_id,
-                'position' => $firstStatus->position ?? 1,
-            ]);
+                [
+                    'tender_id' => $tender->id,
+                ],
+                [
+                    'status_id' => $request->status_id,
+                    'position' => $firstStatus->position ?? 1,
+                ]);
 
             DB::commit();
 
             Log::create([
-                'description' => "Atualizou um edital",
+                'description' => 'Atualizou um edital',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
@@ -315,30 +319,33 @@ class TenderService
             return ['status' => true, 'data' => $tender];
         } catch (Exception $error) {
             DB::rollBack();
+
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => $error->getCode()];
         }
     }
 
     public function convertToContract($tender_id)
     {
-        try{
+        try {
             $tender = Tender::find($tender_id);
 
-            if(!isset($tender)) throw new Exception('Licitação não encontrado');
+            if (! isset($tender)) {
+                throw new Exception('Licitação não encontrado');
+            }
 
             $tender->is_contract = true;
             $tender->save();
 
             return [
                 'status' => true,
-                'data'   => $tender
+                'data' => $tender,
             ];
 
-        }catch (Exception $error) {
+        } catch (Exception $error) {
             return [
-                'status'     => false,
-                'error'      => $error->getMessage(),
-                'statusCode' => $error->getCode()
+                'status' => false,
+                'error' => $error->getMessage(),
+                'statusCode' => $error->getCode(),
             ];
         }
 
@@ -348,9 +355,11 @@ class TenderService
     {
         try {
             $tenderStatus = TenderStatus::where('tender_id', $tender_id)->first();
-    
-            if (!$tenderStatus) throw new Exception('Status da licitação não encontrado');
-    
+
+            if (! $tenderStatus) {
+                throw new Exception('Status da licitação não encontrado');
+            }
+
             DB::transaction(function () use ($tenderStatus, $new_status_id, $position, $tender_id) {
                 if ($tenderStatus->status_id == $new_status_id) {
                     TenderStatus::where('status_id', $new_status_id)
@@ -361,19 +370,19 @@ class TenderService
                     TenderStatus::where('status_id', $tenderStatus->status_id)
                         ->where('position', '>', $tenderStatus->position)
                         ->decrement('position');
-    
+
                     TenderStatus::where('status_id', $new_status_id)
                         ->where('position', '>=', $position)
                         ->increment('position');
                 }
-    
+
                 $tenderStatus->update([
                     'status_id' => $new_status_id,
                     'position' => $position,
                 ]);
 
                 Log::create([
-                    'description' => "Atualizou um status",
+                    'description' => 'Atualizou um status',
                     'user_id' => Auth::user()->id,
                     'request' => json_encode([]),
                 ]);
@@ -390,14 +399,16 @@ class TenderService
         try {
             $tender = Tender::find($tender_id);
 
-            if (!$tender) throw new Exception('Licitação não encontrada');
+            if (! $tender) {
+                throw new Exception('Licitação não encontrada');
+            }
 
             $tenderId = $tender->id;
             $tenderObject = $tender->object;
             $tender->delete();
 
             Log::create([
-                'description' => "Deletou um edital",
+                'description' => 'Deletou um edital',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['object' => $tenderObject]),
             ]);
@@ -413,7 +424,9 @@ class TenderService
         try {
             $attachment = TenderAttachment::find($attachmentId);
 
-            if (!$attachment) throw new Exception('Anexo não encontrado');
+            if (! $attachment) {
+                throw new Exception('Anexo não encontrado');
+            }
 
             $attachmentId = $attachment->id;
             $attachment->delete();
@@ -421,7 +434,7 @@ class TenderService
             $filename = $attachment->filename;
 
             Log::create([
-                'description' => "Deletou um anexo",
+                'description' => 'Deletou um anexo',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $filename]),
             ]);
@@ -437,14 +450,16 @@ class TenderService
         try {
             $item = TenderItem::find($itemId);
 
-            if (!$item) throw new Exception('Item não encontrado');
+            if (! $item) {
+                throw new Exception('Item não encontrado');
+            }
 
             $itemId = $item->id;
             $itemName = $item->item;
             $item->delete();
 
             Log::create([
-                'description' => "Deletou um item",
+                'description' => 'Deletou um item',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $itemName]),
             ]);
@@ -460,15 +475,17 @@ class TenderService
         try {
             $task = TenderTask::find($taskId);
 
-            if (!$task) throw new Exception('Tarefa não encontrada');
+            if (! $task) {
+                throw new Exception('Tarefa não encontrada');
+            }
 
             $taskId = $task->id;
             $taskName = $task->name;
-            
+
             $task->delete();
 
             Log::create([
-                'description' => "Deletou um tarefa",
+                'description' => 'Deletou um tarefa',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $taskName]),
             ]);

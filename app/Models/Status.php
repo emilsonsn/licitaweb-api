@@ -11,13 +11,14 @@ class Status extends Model
     use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
 
     public $table = 'status';
 
     public $fillable = [
         'name',
-        'color'
+        'color',
     ];
 
     public function tenderStatuses()

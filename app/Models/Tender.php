@@ -11,6 +11,7 @@ class Tender extends Model
     use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
 
     public $table = 'tenders';
@@ -27,26 +28,31 @@ class Tender extends Model
         'items_count',
         'user_id',
         'is_contract',
-        'client_id'
+        'client_id',
     ];
 
-    public function modality(){
+    public function modality()
+    {
         return $this->belongsTo(Modality::class);
     }
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function task(){
+    public function task()
+    {
         return $this->belongsTo(TenderTask::class);
     }
 
-    public function items(){
+    public function items()
+    {
         return $this->hasMany(TenderItem::class);
     }
 
-    public function attachments(){
+    public function attachments()
+    {
         return $this->hasMany(TenderAttachment::class);
     }
 
@@ -61,12 +67,14 @@ class Tender extends Model
             'status_id'          // Chave estrangeira no modelo TenderStatus
         );
     }
-    
-    public function tenderStatus(){
+
+    public function tenderStatus()
+    {
         return $this->hasMany(TenderStatus::class);
     }
 
-    public function client(){
+    public function client()
+    {
         return $this->belongsTo(Client::class);
     }
 }

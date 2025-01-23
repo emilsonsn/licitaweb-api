@@ -11,7 +11,9 @@ class Notification extends Model
     use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
+
     const DELETED_AT = 'deleted_at';
 
     public $table = 'notifications';
@@ -25,11 +27,13 @@ class Notification extends Model
         'status',
     ];
 
-    public function tender(){
+    public function tender()
+    {
         $this->belongsTo(Tender::class);
     }
 
-    public function user_id(){
+    public function user_id()
+    {
         $this->belongsTo(User::class);
     }
 }

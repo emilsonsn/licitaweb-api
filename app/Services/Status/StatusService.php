@@ -15,6 +15,7 @@ class StatusService
     {
         try {
             $status = Status::get();
+
             return ['status' => true, 'data' => $status];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -46,24 +47,25 @@ class StatusService
                 'name' => 'required|string',
                 'color' => 'required|string',
             ];
-    
+
             $validator = Validator::make($request->all(), $rules);
-    
+
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
             }
-        
+
             $status = Status::create($validator->validated());
 
             Log::create([
-                'description' => "Criou um status",
+                'description' => 'Criou um status',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request),
             ]);
-    
+
             return ['status' => true, 'data' => $status];
         } catch (Exception $error) {
             DB::rollBack();
+
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
@@ -84,14 +86,14 @@ class StatusService
 
             $status = Status::find($status_id);
 
-            if (!$status) {
+            if (! $status) {
                 throw new Exception('Etapa não encontrada', 400);
             }
 
             $status->update($validator->validated());
 
             Log::create([
-                'description' => "Atualizou um status",
+                'description' => 'Atualizou um status',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request),
             ]);
@@ -107,15 +109,15 @@ class StatusService
         try {
             $status = Status::find($status_id);
 
-            if (!isset($status)){
+            if (! isset($status)) {
                 throw new Exception('Etapa não encontrado', 400);
             }
-                    
-            if($status->tenderStatuses()->count()){
+
+            if ($status->tenderStatuses()->count()) {
                 throw new Exception('Não é possível deletar Etapa com editais', 400);
             }
 
-            if(Status::count() == 1){
+            if (Status::count() == 1) {
                 throw new Exception('Não é possível apagar todas as etapas', 400);
             }
 
@@ -124,7 +126,7 @@ class StatusService
             $status->delete();
 
             Log::create([
-                'description' => "Deletou um status",
+                'description' => 'Deletou um status',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $statusName]),
             ]);

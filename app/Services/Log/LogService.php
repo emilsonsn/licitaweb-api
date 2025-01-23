@@ -11,6 +11,7 @@ class LogService
     {
         try {
             $logs = Log::get();
+
             return ['status' => true, 'data' => $logs];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];

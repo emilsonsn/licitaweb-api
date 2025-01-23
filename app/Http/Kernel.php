@@ -13,13 +13,11 @@ class Kernel extends HttpKernel
      *
      * @var array<int, class-string|string>
      */
-
-     protected $routeMiddleware = [
+    protected $routeMiddleware = [
         'jwt' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
         'user' => \App\Http\Middleware\UserMiddleware::class,
     ];
 
-    
     protected $middleware = [
         // \App\Http\Middleware\TrustHosts::class,
         \App\Http\Middleware\TrustProxies::class,
@@ -49,7 +47,7 @@ class Kernel extends HttpKernel
             // \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             \Illuminate\Routing\Middleware\ThrottleRequests::class.':api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
-    ],
+        ],
     ];
 
     /**

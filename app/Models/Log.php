@@ -10,6 +10,7 @@ class Log extends Model
     use HasFactory;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
 
     public $table = 'logs';
@@ -20,7 +21,8 @@ class Log extends Model
         'request',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 }

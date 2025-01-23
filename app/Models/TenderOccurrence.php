@@ -11,7 +11,9 @@ class TenderOccurrence extends Model
     use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
+
     const DELETED_AT = 'deleted_at';
 
     public $table = 'tender_occurrences';
@@ -23,17 +25,18 @@ class TenderOccurrence extends Model
         'tender_id',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function tender(){
+    public function tender()
+    {
         return $this->belongsTo(Tender::class);
     }
 
-    public function files(){
+    public function files()
+    {
         return $this->hasMany(TenderOccurrenceFile::class);
     }
-
-
 }

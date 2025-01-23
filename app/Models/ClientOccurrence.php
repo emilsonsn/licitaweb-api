@@ -11,7 +11,9 @@ class ClientOccurrence extends Model
     use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
+
     const DELETED_AT = 'deleted_at';
 
     public $table = 'client_occurrences';
@@ -23,16 +25,18 @@ class ClientOccurrence extends Model
         'client_id',
     ];
 
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function client(){
+    public function client()
+    {
         return $this->belongsTo(Client::class);
     }
 
-    public function files(){
+    public function files()
+    {
         return $this->hasMany(ClientOccurrenceFile::class);
     }
-
 }

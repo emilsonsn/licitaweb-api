@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientOccurrenceService
 {
-
     public function search($request)
     {
         try {
@@ -21,16 +20,16 @@ class ClientOccurrenceService
 
             $clientOccurrence = ClientOccurrence::with('files')->orderBy('id', 'desc');
 
-            if(isset($search_term)){
+            if (isset($search_term)) {
                 $clientOccurrence->where('title', 'LIKE', "%{$search_term}%")
                     ->orWhere('description', 'LIKE', "%{$search_term}%");
             }
 
-            if(isset($client_id)){
+            if (isset($client_id)) {
                 $clientOccurrence->where('client_id', $client_id);
             }
 
-            if(isset($user_id)){
+            if (isset($user_id)) {
                 $clientOccurrence->where('user_id', $user_id);
             }
 
@@ -47,9 +46,9 @@ class ClientOccurrenceService
         try {
             $rules = [
                 'title' => ['required', 'string', 'max:255'],
-                'description' => ['required', 'string'],                
+                'description' => ['required', 'string'],
                 'client_id' => ['required', 'integer'],
-                'files' => ['nullable', 'array']
+                'files' => ['nullable', 'array'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -68,7 +67,7 @@ class ClientOccurrenceService
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
                     $path = $file->store('tenders/occurrences', 'public');
-    
+
                     $files[] = ClientOccurrenceFile::create([
                         'filename' => $file->getClientOriginalName(),
                         'path' => $path,

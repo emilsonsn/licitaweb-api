@@ -17,7 +17,10 @@ class UserMiddleware
     {
         $is_admin = auth()->user()->is_admin;
         $is_block = auth()->user()->is_block;
-        if($is_admin || !$is_block) return $next($request);
+        if ($is_admin || ! $is_block) {
+            return $next($request);
+        }
+
         return response()->json(['error' => 'Unauthorized'], 403);
     }
 }

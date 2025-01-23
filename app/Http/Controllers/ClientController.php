@@ -9,56 +9,65 @@ class ClientController extends Controller
 {
     private $clientService;
 
-    public function __construct(ClientService $clientService) {
+    public function __construct(ClientService $clientService)
+    {
         $this->clientService = $clientService;
     }
 
-    public function all() {
+    public function all()
+    {
         $result = $this->clientService->all();
+
         return $this->response($result);
     }
 
-    public function search(Request $request) {
+    public function search(Request $request)
+    {
         $result = $this->clientService->search($request);
+
         return $result;
     }
 
-    public function create(Request $request) {
+    public function create(Request $request)
+    {
         $result = $this->clientService->create($request);
 
         if ($result['status']) {
-            $result['message'] = "Cliente criado com sucesso";
+            $result['message'] = 'Cliente criado com sucesso';
         }
 
         return $this->response($result);
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id)
+    {
         $result = $this->clientService->update($request, $id);
 
         if ($result['status']) {
-            $result['message'] = "Cliente atualizado com sucesso";
+            $result['message'] = 'Cliente atualizado com sucesso';
         }
 
         return $this->response($result);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $result = $this->clientService->delete($id);
 
         if ($result['status']) {
-            $result['message'] = "Cliente excluída coo sucesso";
+            $result['message'] = 'Cliente excluída coo sucesso';
         }
 
         return $this->response($result);
     }
 
-    private function response($result) {
+    private function response($result)
+    {
         return response()->json([
             'status' => $result['status'],
             'message' => $result['message'] ?? null,
             'data' => $result['data'] ?? null,
-            'error' => $result['error'] ?? null
+            'error' => $result['error'] ?? null,
         ], $result['statusCode'] ?? 200);
     }
 }

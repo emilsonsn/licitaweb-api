@@ -9,81 +9,111 @@ class UserController extends Controller
 {
     private $userService;
 
-    public function __construct(UserService $userService) {
+    public function __construct(UserService $userService)
+    {
         $this->userService = $userService;
     }
 
-    public function all() {
+    public function all()
+    {
         $result = $this->userService->all();
 
         return $this->response($result);
     }
 
-    public function search(Request $request){
+    public function search(Request $request)
+    {
         $result = $this->userService->search($request);
 
         return $result;
     }
 
-    public function cards(Request $request){
+    public function cards(Request $request)
+    {
         $result = $this->userService->cards($request);
 
         return $this->response($result);
     }
 
-    public function getUser(){
+    public function getUser()
+    {
         $result = $this->userService->getUser();
 
         return $this->response($result);
     }
 
-    public function create(Request $request){
+    public function create(Request $request)
+    {
         $result = $this->userService->create($request);
 
-        if($result['status']) $result['message'] = "Usuário criado com sucesso";
+        if ($result['status']) {
+            $result['message'] = 'Usuário criado com sucesso';
+        }
+
         return $this->response($result);
     }
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
         $result = $this->userService->update($request, $id);
 
-        if($result['status']) $result['message'] = "Usuário atualizado com sucesso";
+        if ($result['status']) {
+            $result['message'] = 'Usuário atualizado com sucesso';
+        }
+
         return $this->response($result);
     }
 
-    public function delete($id){
+    public function delete($id)
+    {
         $result = $this->userService->delete($id);
 
-        if($result['status']) $result['message'] = "Usuário deletado com sucesso";
+        if ($result['status']) {
+            $result['message'] = 'Usuário deletado com sucesso';
+        }
+
         return $this->response($result);
     }
 
-    public function userBlock($id){
+    public function userBlock($id)
+    {
         $result = $this->userService->userBlock($id);
 
-        if($result['status']) $result['message'] = "Ação realizada com sucesso";
+        if ($result['status']) {
+            $result['message'] = 'Ação realizada com sucesso';
+        }
+
         return $this->response($result);
     }
 
-    public function passwordRecovery(Request $request){
+    public function passwordRecovery(Request $request)
+    {
         $result = $this->userService->requestRecoverPassword($request);
 
-        if($result['status']) $result['message'] = "Email de recuperação enviado com sucesso";
+        if ($result['status']) {
+            $result['message'] = 'Email de recuperação enviado com sucesso';
+        }
+
         return $this->response($result);
     }
 
-    public function updatePassword(Request $request){
+    public function updatePassword(Request $request)
+    {
         $result = $this->userService->updatePassword($request);
-        if($result['status']) $result['message'] = "Senha atualizada com sucesso";
+        if ($result['status']) {
+            $result['message'] = 'Senha atualizada com sucesso';
+        }
+
         return $this->response($result);
     }
 
-    private function response($result){
+    private function response($result)
+    {
         return response()->json([
             'status' => $result['status'],
             'message' => $result['message'] ?? null,
             'data' => $result['data'] ?? null,
-            'error' => $result['error'] ?? null
+            'error' => $result['error'] ?? null,
         ], $result['statusCode'] ?? 200);
     }
 }

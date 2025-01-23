@@ -6,12 +6,10 @@ use App\Models\TenderOccurrence;
 use App\Models\TenderOccurrenceFile;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class TenderOccurrenceService
 {
-
     public function search($request)
     {
         try {
@@ -22,16 +20,16 @@ class TenderOccurrenceService
 
             $tenderOccurrences = TenderOccurrence::with('files')->orderBy('id', 'desc');
 
-            if(isset($search_term)){
+            if (isset($search_term)) {
                 $tenderOccurrences->where('title', 'LIKE', "%{$search_term}%")
                     ->orWhere('description', 'LIKE', "%{$search_term}%");
             }
 
-            if(isset($tender_id)){
+            if (isset($tender_id)) {
                 $tenderOccurrences->where('tender_id', $tender_id);
             }
 
-            if(isset($user_id)){
+            if (isset($user_id)) {
                 $tenderOccurrences->where('user_id', $user_id);
             }
 
@@ -48,9 +46,9 @@ class TenderOccurrenceService
         try {
             $rules = [
                 'title' => ['required', 'string', 'max:255'],
-                'description' => ['required', 'string'],                
+                'description' => ['required', 'string'],
                 'tender_id' => ['required', 'integer'],
-                'files' => ['nullable', 'array']
+                'files' => ['nullable', 'array'],
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -69,7 +67,7 @@ class TenderOccurrenceService
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
                     $path = $file->store('tenders/occurrences', 'public');
-    
+
                     $files[] = TenderOccurrenceFile::create([
                         'filename' => $file->getClientOriginalName(),
                         'path' => $path,

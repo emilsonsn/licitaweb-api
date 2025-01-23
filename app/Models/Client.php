@@ -30,7 +30,8 @@ class Client extends Model
         'flag',
     ];
 
-    public function responsible(){
+    public function responsible()
+    {
         return $this->belongsTo(User::class);
-    }   
+    }
 }

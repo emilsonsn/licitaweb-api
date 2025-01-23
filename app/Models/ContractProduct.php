@@ -9,7 +9,7 @@ class ContractProduct extends Model
 {
     use HasFactory;
 
-    public $table = "contract_products";
+    public $table = 'contract_products';
 
     protected $fillable = [
         'contract_id',
@@ -17,12 +17,13 @@ class ContractProduct extends Model
         'quantity',
     ];
 
-
-    public function contract() {
+    public function contract()
+    {
         return $this->belongsTo(Contract::class);
     }
 
-    public function product() {
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
 }

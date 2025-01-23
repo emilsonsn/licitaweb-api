@@ -15,6 +15,7 @@ class NotificationService
     {
         try {
             $notifications = Notification::get();
+
             return ['status' => true, 'data' => $notifications];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -48,9 +49,9 @@ class NotificationService
                 'datetime' => ['required', 'date_format:Y-m-d H:i:s'],
                 'tender_id' => ['nullable', 'integer'],
             ];
-    
+
             $validator = Validator::make($request->all(), $rules);
-    
+
             if ($validator->fails()) {
                 return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
             }
@@ -58,18 +59,19 @@ class NotificationService
             $data = $validator->validated();
 
             $data['user_id'] = Auth::user()->id;
-        
+
             $notification = Notification::create($data);
 
             Log::create([
-                'description' => "Criou uma notificação",
+                'description' => 'Criou uma notificação',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request),
             ]);
-    
+
             return ['status' => true, 'data' => $notification];
         } catch (Exception $error) {
             DB::rollBack();
+
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
@@ -92,7 +94,7 @@ class NotificationService
 
             $notificationToUpdate = Notification::find($status_id);
 
-            if (!$notificationToUpdate) {
+            if (! $notificationToUpdate) {
                 throw new Exception('Notificação não encontrada', 400);
             }
             $data = $validator->validated();
@@ -101,7 +103,7 @@ class NotificationService
             $notificationToUpdate->update($data);
 
             Log::create([
-                'description' => "Atualizou uma notificação",
+                'description' => 'Atualizou uma notificação',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request),
             ]);
@@ -117,15 +119,15 @@ class NotificationService
         try {
             $notification = Notification::find($status_id);
 
-            if (!isset($notification)){
+            if (! isset($notification)) {
                 throw new Exception('Notificação não encontrada', 400);
-            }                        
+            }
 
-            $notification = $notification->description;            
+            $notification = $notification->description;
             $notification->delete();
 
             Log::create([
-                'description' => "Deletou uma notificação",
+                'description' => 'Deletou uma notificação',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $notification]),
             ]);

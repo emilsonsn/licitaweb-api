@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Log;
@@ -19,7 +20,7 @@ class AuthController extends Controller
         $user = auth()->user();
 
         Log::create([
-            'description' => "Logou no sistema",
+            'description' => 'Logou no sistema',
             'user_id' => $user->id,
             'request' => json_encode(['email' => $request->email]),
         ]);
@@ -29,7 +30,7 @@ class AuthController extends Controller
             'user' => $user,
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => JWTAuth::factory()->getTTL() * 60
+            'expires_in' => JWTAuth::factory()->getTTL() * 60,
         ]);
     }
 
@@ -39,7 +40,7 @@ class AuthController extends Controller
         $user = auth()->user();
 
         Log::create([
-            'description' => "Deslogou do sistema",
+            'description' => 'Deslogou do sistema',
             'user_id' => Auth::user()->id,
             'request' => json_encode([]),
         ]);
@@ -51,6 +52,7 @@ class AuthController extends Controller
     {
         try {
             $token = JWTAuth::parseToken()->authenticate();
+
             return response()->json(['status' => true, 'message' => 'Token válido']);
         } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
             return response()->json(['error' => 'Token expirado'], 401);

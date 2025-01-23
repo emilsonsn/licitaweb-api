@@ -1,23 +1,23 @@
 <?php
 
-use App\Http\Controllers\ClientOccurrenceController;
-use App\Http\Controllers\ContractController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductOccurrenceController;
-use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\SupplierOccurrenceController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientOccurrenceController;
+use App\Http\Controllers\ContractController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductOccurrenceController;
 use App\Http\Controllers\StatusController;
+use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierOccurrenceController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenderController;
 use App\Http\Controllers\TenderOccurrenceController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,14 +38,13 @@ Route::post('updatePassword', [UserController::class, 'updatePassword']);
 
 Route::get('validateToken', [AuthController::class, 'validateToken']);
 
-Route::middleware('jwt')->group(function(){
+Route::middleware('jwt')->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::middleware(AdminMiddleware::class)->group(function() {    
-    });
+    Route::middleware(AdminMiddleware::class)->group(function () {});
 
-    Route::prefix('user')->group(function(){
+    Route::prefix('user')->group(function () {
         Route::get('all', [UserController::class, 'all']);
         Route::get('search', [UserController::class, 'search']);
         Route::get('cards', [UserController::class, 'cards']);
@@ -56,7 +55,7 @@ Route::middleware('jwt')->group(function(){
         Route::post('block/{id}', [UserController::class, 'userBlock']);
     });
 
-    Route::prefix('tender')->group(function(){
+    Route::prefix('tender')->group(function () {
         Route::get('all', [TenderController::class, 'all']);
         Route::get('search', [TenderController::class, 'search']);
         Route::get('{id}', [TenderController::class, 'getById']);
@@ -64,15 +63,15 @@ Route::middleware('jwt')->group(function(){
 
         Route::delete('attachment/{attachmentId}', [TenderController::class, 'deleteAttachment']);
         Route::delete('item/{itemId}', [TenderController::class, 'deleteItem']);
-        Route::delete('task/{taskId}', [TenderController::class, 'deleteTask']);        
+        Route::delete('task/{taskId}', [TenderController::class, 'deleteTask']);
         Route::patch('convert-to-contract/{tender_id}', [TenderController::class, 'convertToContract']);
         Route::patch('{tender_id}/status', [TenderController::class, 'updateStatus']);
-        
+
         Route::patch('{id}', [TenderController::class, 'update']);
         Route::delete('{id}', [TenderController::class, 'delete']);
     });
 
-    Route::prefix('modality')->group(function(){
+    Route::prefix('modality')->group(function () {
         Route::get('all', [ModalityController::class, 'all']);
         Route::get('search', [ModalityController::class, 'search']);
         Route::post('create', [ModalityController::class, 'create']);
@@ -80,7 +79,7 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [ModalityController::class, 'delete']);
     });
 
-    Route::prefix('client')->group(function(){
+    Route::prefix('client')->group(function () {
         Route::get('all', [ClientController::class, 'all']);
         Route::get('search', [ClientController::class, 'search']);
         Route::post('create', [ClientController::class, 'create']);
@@ -88,7 +87,7 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [ClientController::class, 'delete']);
     });
 
-    Route::prefix('supplier')->group(function(){
+    Route::prefix('supplier')->group(function () {
         Route::get('all', [SupplierController::class, 'all']);
         Route::get('search', [SupplierController::class, 'search']);
         Route::post('create', [SupplierController::class, 'create']);
@@ -96,7 +95,7 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [SupplierController::class, 'delete']);
     });
 
-    Route::prefix('tender-occurrence')->group(function(){
+    Route::prefix('tender-occurrence')->group(function () {
         Route::get('all', [TenderOccurrenceController::class, 'all']);
         Route::get('search', [TenderOccurrenceController::class, 'search']);
         Route::post('create', [TenderOccurrenceController::class, 'create']);
@@ -104,7 +103,7 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [TenderOccurrenceController::class, 'delete']);
     });
 
-    Route::prefix('product')->group(function(){
+    Route::prefix('product')->group(function () {
         Route::get('all', [ProductController::class, 'all']);
         Route::get('search', [ProductController::class, 'search']);
         Route::post('create', [ProductController::class, 'create']);
@@ -112,22 +111,22 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [ProductController::class, 'delete']);
     });
 
-    Route::prefix('client-occurrence')->group(function(){
+    Route::prefix('client-occurrence')->group(function () {
         Route::get('search', [ClientOccurrenceController::class, 'search']);
         Route::post('create', [ClientOccurrenceController::class, 'create']);
     });
 
-    Route::prefix('product-occurrence')->group(function(){
+    Route::prefix('product-occurrence')->group(function () {
         Route::get('search', [ProductOccurrenceController::class, 'search']);
         Route::post('create', [ProductOccurrenceController::class, 'create']);
     });
 
-    Route::prefix('supplier-occurrence')->group(function(){
+    Route::prefix('supplier-occurrence')->group(function () {
         Route::get('search', [SupplierOccurrenceController::class, 'search']);
         Route::post('create', [SupplierOccurrenceController::class, 'create']);
     });
-    
-    Route::prefix('status')->group(function(){
+
+    Route::prefix('status')->group(function () {
         Route::get('all', [StatusController::class, 'all']);
         Route::get('search', [StatusController::class, 'search']);
         Route::post('create', [StatusController::class, 'create']);
@@ -135,7 +134,7 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [StatusController::class, 'delete']);
     });
 
-    Route::prefix('notification')->group(function(){
+    Route::prefix('notification')->group(function () {
         Route::get('all', [NotificationController::class, 'all']);
         Route::get('search', [NotificationController::class, 'search']);
         Route::post('create', [NotificationController::class, 'create']);
@@ -143,12 +142,12 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [NotificationController::class, 'delete']);
     });
 
-    Route::prefix('log')->group(function(){
+    Route::prefix('log')->group(function () {
         Route::get('all', [LogController::class, 'all']);
         Route::get('search', [LogController::class, 'search']);
     });
 
-    Route::prefix('task')->group(function(){
+    Route::prefix('task')->group(function () {
         Route::get('all', [TaskController::class, 'all']);
         Route::get('search', [TaskController::class, 'search']);
         Route::post('create', [TaskController::class, 'create']);
@@ -156,13 +155,13 @@ Route::middleware('jwt')->group(function(){
         Route::delete('{id}', [TaskController::class, 'delete']);
     });
 
-    Route::prefix('contract')->group(function(){
+    Route::prefix('contract')->group(function () {
         Route::get('all', [ContractController::class, 'all']);
         Route::get('search', [ContractController::class, 'search']);
         Route::post('create', [ContractController::class, 'create']);
         Route::patch('{id}', [ContractController::class, 'update']);
         Route::delete('{id}', [ContractController::class, 'delete']);
-    
+
         Route::post('{contractId}/payment', [ContractController::class, 'createPayment']);
         Route::delete('payment/{paymentId}', [ContractController::class, 'deletePayment']);
         Route::delete('product/{contractProductId}', [ContractController::class, 'deleteContractProduct']);

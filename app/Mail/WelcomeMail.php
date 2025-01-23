@@ -11,9 +11,10 @@ class WelcomeMail extends Mailable
     use Queueable, SerializesModels;
 
     public $name;
-    public $email;
-    public $password;
 
+    public $email;
+
+    public $password;
 
     /**
      * Create a new message instance.
@@ -28,16 +29,14 @@ class WelcomeMail extends Mailable
     /**
      * Get the message envelope.
      */
-    
     public function build()
     {
         return $this->view('emails.welcome')
-                    ->with([
-                        'name' => $this->name,
-                        'email' => $this->email,
-                        'password' => $this->password,
-                    ])
-                    ->subject('Bem vindo');
+            ->with([
+                'name' => $this->name,
+                'email' => $this->email,
+                'password' => $this->password,
+            ])
+            ->subject('Bem vindo');
     }
-
 }

@@ -17,8 +17,8 @@ class AdminMiddleware
     {
         $position = auth()->user()->companyPosition->position;
 
-        if(isset($position)){
-            switch($position){
+        if (isset($position)) {
+            switch ($position) {
                 case 'Admin':
                 case 'Financial':
                 case 'Supplies':
@@ -27,7 +27,7 @@ class AdminMiddleware
                     return response()->json(['error' => 'Unauthorized'], 403);
             }
         }
-        
+
         return response()->json(['error' => 'Unauthorized'], 403);
     }
 }

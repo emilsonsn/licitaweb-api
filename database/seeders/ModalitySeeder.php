@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Modality;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ModalitySeeder extends Seeder
@@ -21,7 +20,7 @@ class ModalitySeeder extends Seeder
             ['name' => 'Leilão Presencial', 'description' => 'Modalidade para venda de bens públicos ao maior lance.'],
             ['name' => 'Leilão Eletrônico', 'description' => 'Modalidade para venda de bens públicos ao maior lance.'],
             ['name' => 'Pregão Presencial', 'description' => 'Usada para aquisição de bens e serviços comuns com foco no menor preço.'],
-            ['name' => 'Pregão Eletrônico', 'description' => 'Usada para aquisição de bens e serviços comuns com foco no menor preço.']
+            ['name' => 'Pregão Eletrônico', 'description' => 'Usada para aquisição de bens e serviços comuns com foco no menor preço.'],
         ];
 
         foreach ($modalities as $modality) {

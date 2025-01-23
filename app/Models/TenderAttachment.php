@@ -12,6 +12,7 @@ class TenderAttachment extends Model
     use HasFactory, SoftDeletes;
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = 'updated_at';
 
     public $table = 'tender_attachments';
@@ -25,7 +26,7 @@ class TenderAttachment extends Model
 
     public function getAttributePath()
     {
-        if(isset($this->path)){
+        if (isset($this->path)) {
             return Storage::url($this->path);
         }
     }
