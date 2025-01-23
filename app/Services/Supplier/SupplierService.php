@@ -27,13 +27,20 @@ class SupplierService
         try {
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
+            $user_id = $request->user_id ?? null;
 
             $suppliers = Supplier::with('user')->query();
 
             if (isset($search_term)) {
-                $suppliers->where('name', 'LIKE', "%{$search_term}%")
-                    ->orWhere('cpf_or_cnpj', 'LIKE', "%{$search_term}%")
-                    ->orWhere('email', 'LIKE', "%{$search_term}%");
+                $suppliers->where(function($query) use($search_term) {
+                    $query->where('name', 'LIKE', "%{$search_term}%")
+                        ->orWhere('cpf_or_cnpj', 'LIKE', "%{$search_term}%")
+                        ->orWhere('email', 'LIKE', "%{$search_term}%");
+                });
+            }
+
+            if(isset($user_id)){
+                $suppliers->where('user_id', $user_id);
             }
 
             return $suppliers->paginate($perPage);
