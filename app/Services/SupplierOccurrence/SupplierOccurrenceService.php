@@ -59,7 +59,7 @@ class SupplierOccurrenceService
 
             $data = $validator->validated();
 
-            $data['user_id'] = Auth::user()->id;
+            // $data['user_id'] = Auth::user()->id;
 
             $supplierOccurrence = SupplierOccurrence::create($data);
 

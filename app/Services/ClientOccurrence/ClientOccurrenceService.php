@@ -59,7 +59,7 @@ class ClientOccurrenceService
 
             $data = $validator->validated();
 
-            $data['user_id'] = Auth::user()->id;
+            // $data['user_id'] = Auth::user()->id;
 
             $clientOccurrence = ClientOccurrence::create($data);
 
