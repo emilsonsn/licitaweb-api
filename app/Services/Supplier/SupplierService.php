@@ -29,7 +29,7 @@ class SupplierService
             $search_term = $request->search_term ?? null;
             $user_id = $request->user_id ?? null;
 
-            $suppliers = Supplier::with('user')->query();
+            $suppliers = Supplier::with('user');
 
             if (isset($search_term)) {
                 $suppliers->where(function($query) use($search_term) {
