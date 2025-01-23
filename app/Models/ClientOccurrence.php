@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ClientOccurrence extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     const CREATED_AT = 'created_at';
 
