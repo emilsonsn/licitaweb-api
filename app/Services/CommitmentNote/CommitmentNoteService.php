@@ -4,8 +4,10 @@ namespace App\Services\CommitmentNote;
 
 use App\Models\CommitmentNote;
 use App\Models\CommitmentNoteProduct;
+use Auth;
 use Exception;
 use Illuminate\Support\Facades\Validator;
+use Log;
 
 class CommitmentNoteService
 {
@@ -64,7 +66,7 @@ class CommitmentNoteService
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
+                throw new Exception($validator->errors(), 400);                
             }
 
             $validatedData = $validator->validated();
@@ -150,10 +152,33 @@ class CommitmentNoteService
                 throw new Exception('Nota de empenho não encontrada');
             }
 
+            Log::create([
+                'description' => 'Nota de empenho deletada',
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($commitmentNote),
+            ]);
+
             $commitmentNote->products()->delete();
             $commitmentNote->delete();
 
             return ['status' => true, 'data' => 'Nota de empenho deletada com sucesso'];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+    public function deleteProduct($commitmentNoteProductId)
+    {
+        try {
+            $commitmentNoteProduct = CommitmentNoteProduct::find($commitmentNoteProductId);
+
+            if (!$commitmentNoteProduct) {
+                throw new Exception('Produto não encontrado');
+            }
+
+            $commitmentNoteProduct->delete();
+
+            return ['status' => true, 'data' => 'Produto removido da nota de empenho com sucesso'];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }

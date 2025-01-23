@@ -25,7 +25,7 @@ class ProductController extends Controller
     {
         $result = $this->productService->search($request);
 
-        return $this->response($result);
+        return $result;
     }
 
     public function create(Request $request)

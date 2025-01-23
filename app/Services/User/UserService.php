@@ -63,7 +63,7 @@ class UserService
 
             if ($user) {
                 // Cast para o tipo correto
-                $user = $user instanceof \App\Models\User ? $user : \App\Models\User::find($user->id);
+                $user = $user instanceof User ? $user : User::find($user->id);
 
                 return ['status' => true, 'data' => $user];
             }
