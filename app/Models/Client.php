@@ -39,7 +39,7 @@ class Client extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function client(){
+    public function attachments(){
         return $this->hasMany(ClientAttachments::class);
     }
 }
