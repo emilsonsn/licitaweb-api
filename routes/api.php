@@ -86,6 +86,7 @@ Route::middleware('jwt')->group(function () {
         Route::post('create', [ClientController::class, 'create']);
         Route::patch('{id}', [ClientController::class, 'update']);
         Route::delete('{id}', [ClientController::class, 'delete']);
+        Route::delete('attachment/{attachmentId}', [ClientController::class, 'deleteAttachment']);
     });
 
     Route::prefix('supplier')->group(function () {
