@@ -3,7 +3,10 @@
 namespace App\Services\Client;
 
 use App\Models\Client;
+use App\Models\ClientAttachments;
+use App\Models\Log;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ClientService
@@ -11,7 +14,7 @@ class ClientService
     public function all()
     {
         try {
-            $clients = Client::orderBy('id', 'desc')
+            $clients = Client::with('user', 'attachments')->orderBy('id', 'desc')
                 ->get();
 
             return [
@@ -32,7 +35,7 @@ class ClientService
             $user_id = $request->user_id ?? null;
             $location = $request->location ?? null;
 
-            $clients = Client::with('user')->orderBy('id', 'desc');
+            $clients = Client::with('user', 'attachments')->orderBy('id', 'desc');
 
             if (isset($search_term)) {
                 $clients->where(function($query) use ($search_term){
@@ -88,6 +91,8 @@ class ClientService
                 'email' => ['required', 'string', 'max:255'],
                 'user_id' => ['required', 'string', 'max:255'],
                 'flag' => ['required', 'string', 'max:255'],
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -97,6 +102,26 @@ class ClientService
             }
 
             $client = Client::create($validator->validated());
+
+            $attachments = [];
+            if ($request->attachments) {
+                foreach ($request->attachments as $attachment) {
+                    $path = $attachment->store('clients/attachments', 'public');
+                    $fullPath = 'storage/'.$path;
+
+                    $attachments[] = ClientAttachments::create([
+                        'client_id' => $client->id,
+                        'filename' => $attachment->getClientOriginalName(),
+                        'path' => $fullPath,
+                    ]);
+                }
+            }
+
+            Log::create([
+                'description' => 'Criou um cliente',
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request->all()),
+            ]);
 
             return ['status' => true, 'data' => $client];
         } catch (Exception $error) {
@@ -124,6 +149,8 @@ class ClientService
                 'email' => ['required', 'string', 'max:255'],
                 'user_id' => ['required', 'string', 'max:255'], // Responsável
                 'flag' => ['required', 'string', 'max:255'], // Bandeira: Verde, amarela e vermelha
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:2048',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -140,6 +167,27 @@ class ClientService
 
             $clientToUpdate->update($validator->validated());
 
+            $attachments = [];
+            if ($request->attachments) {
+                foreach ($request->attachments as $attachment) {
+                    $path = $attachment->store('tenders/attachments', 'public');
+                    $fullPath = 'storage/'.$path;
+
+                    $attachments[] = ClientAttachments::updateOrCreate(
+                        [
+                            'client_id' => $clientToUpdate->id,
+                            'filename' => $attachment->getClientOriginalName(),
+                            'path' => $fullPath,
+                        ]);
+                }
+            }
+
+            Log::create([
+                'description' => 'Atualizou um cliente',
+                'user_id' => Auth::user()->id,
+                'request' => json_encode($request->all()),
+            ]);
+
             return ['status' => true, 'data' => $clientToUpdate];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
@@ -155,10 +203,48 @@ class ClientService
                 throw new Exception('Cliente não encontrado');
             }
 
+            $clientAttachments = ClientAttachments::where('client_id', $client->id);
+
+            if($clientAttachments) {
+                $clientAttachments->delete();
+            }
+
             $clientName = $client->name;
             $client->delete();
 
+            Log::create([
+                'description' => 'Deletou um cliente',
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['object' => $client->object]),
+            ]);
+
             return ['status' => true, 'data' => $clientName];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+    public function deleteAttachment($attachmentId)
+    {
+        try {
+            $attachment = ClientAttachments::find($attachmentId);
+
+            if (! $attachment) {
+                throw new Exception('Anexo não encontrado');
+            }
+
+            $attachmentId = $attachment->id;
+            $attachment->delete();
+
+            $filename = $attachment->filename;
+
+            Log::create([
+                'description' => 'Deletou um anexo de cliente',
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $filename]),
+            ]);
+
+            return ['status' => true, 'data' => ['attachmentId' => $attachmentId]];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
