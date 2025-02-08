@@ -17,7 +17,7 @@ class ProductService
     public function all()
     {
         try {
-            $products = Product::get();
+            $products = Product::with('files')->get();
 
             return ['status' => true, 'data' => $products];
         } catch (Exception $error) {
@@ -31,7 +31,7 @@ class ProductService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
 
-            $products = Product::query();
+            $products = Product::with('files')->query();
 
             if (isset($search_term)) {
                 $products->where('name', 'LIKE', "%{$search_term}%")
