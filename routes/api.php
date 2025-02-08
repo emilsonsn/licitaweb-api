@@ -108,6 +108,7 @@ Route::middleware('jwt')->group(function () {
     Route::prefix('product')->group(function () {
         Route::get('all', [ProductController::class, 'all']);
         Route::get('search', [ProductController::class, 'search']);
+        Route::get('historical', [ProductController::class, 'historical']);
         Route::post('create', [ProductController::class, 'create']);
         Route::patch('{id}', [ProductController::class, 'update']);
         Route::delete('{id}', [ProductController::class, 'delete']);

@@ -4,6 +4,8 @@ namespace App\Services\Product;
 
 use App\Models\Log;
 use App\Models\Product;
+use App\Models\ProductOccurrence;
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +31,33 @@ class ProductService
             $search_term = $request->search_term ?? null;
 
             $products = Product::query();
+
+            if (isset($search_term)) {
+                $products->where('name', 'LIKE', "%{$search_term}%")
+                    ->orWhere('sku', 'LIKE', "%{$search_term}%")
+                    ->orWhere('category', 'LIKE', "%{$search_term}%");
+            }
+
+            return $products->paginate($perPage);
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+    public function historical($request)
+    {
+        try {
+            $product_id = $request->input('id');
+            $perPage = $request->input('take', 10);
+            $search_term = $request->search_term ?? null;
+
+            $products = ProductOccurrence::query();
+
+            if(!$product_id){
+                throw new Exception('Id de produto obrigatorio', 400);
+            }
+
+            $products->where('product_id', $product_id);
 
             if (isset($search_term)) {
                 $products->where('name', 'LIKE', "%{$search_term}%")
@@ -124,7 +153,17 @@ class ProductService
                 throw new Exception($validator->errors(), 400);
             }
 
+            if($product->purchase_cost != $request->purchase_cost) {
+                $user = User::find(Auth::user()->id);
+                ProductOccurrence::create([
+                    'title' => 'Alteração de custo de aquisição',
+                    'description' => $user->name . ' alterou o valor de custo de ' . $product->purchase_cost . ' para ' . $request->purchase_cost,
+                    'product_id' => $product_id
+                ]);
+            }
+
             $product->update($validator->validated());
+
 
             Log::create([
                 'description' => 'Updated a product',
