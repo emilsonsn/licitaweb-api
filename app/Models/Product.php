@@ -19,6 +19,7 @@ class Product extends Model
     public $table = 'products';
 
     public $fillable = [
+        'id',
         'name',
         'sku',
         'category',

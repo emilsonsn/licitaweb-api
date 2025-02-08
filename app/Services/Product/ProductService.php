@@ -65,7 +65,7 @@ class ProductService
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                return ['status' => false, 'error' => $validator->errors(), 'statusCode' => 400];
+                throw new Exception($validator->errors(), 400);
             }
 
             $product = Product::create($validator->validated());
@@ -87,9 +87,23 @@ class ProductService
     public function update($request, $product_id)
     {
         try {
+            $product = Product::where('sku', $request->sku)->first();
+
+            if (! $product) {
+                $product = Product::find($product_id);
+                if (! $product) {
+                    $product = Product::find($product_id);
+                    throw new Exception('Product not found', 400);
+                }
+            }
+
+            if ($product->id != $product_id){
+                throw new Exception('SKU cadastrado em outro produto', 400);
+            }
+
             $rules = [
                 'name' => 'required|string',
-                'sku' => 'required|string|unique:products',
+                'sku' => 'required|string',
                 'category' => 'required|string',
                 'detailed_description' => 'nullable|string',
                 'size' => 'nullable|string',
@@ -108,12 +122,6 @@ class ProductService
 
             if ($validator->fails()) {
                 throw new Exception($validator->errors(), 400);
-            }
-
-            $product = Product::find($product_id);
-
-            if (! $product) {
-                throw new Exception('Product not found', 400);
             }
 
             $product->update($validator->validated());
