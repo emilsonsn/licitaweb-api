@@ -85,8 +85,8 @@ Route::middleware('jwt')->group(function () {
         Route::get('search', [ClientController::class, 'search']);
         Route::post('create', [ClientController::class, 'create']);
         Route::patch('{id}', [ClientController::class, 'update']);
-        Route::delete('{id}', [ClientController::class, 'delete']);
         Route::delete('attachment/{attachmentId}', [ClientController::class, 'deleteAttachment']);
+        Route::delete('{id}', [ClientController::class, 'delete']);
     });
 
     Route::prefix('supplier')->group(function () {
@@ -111,6 +111,7 @@ Route::middleware('jwt')->group(function () {
         Route::get('historical', [ProductController::class, 'historical']);
         Route::post('create', [ProductController::class, 'create']);
         Route::patch('{id}', [ProductController::class, 'update']);
+        Route::delete('attachment/{attachmentId}', [ProductController::class, 'deleteAttachment']);
         Route::delete('{id}', [ProductController::class, 'delete']);
     });
 

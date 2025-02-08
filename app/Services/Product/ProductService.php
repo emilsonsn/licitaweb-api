@@ -235,4 +235,30 @@ class ProductService
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
+
+    public function deleteAttachment($attachmentId)
+    {
+        try {
+            $attachment = ProductFile::find($attachmentId);
+
+            if (! $attachment) {
+                throw new Exception('Anexo não encontrado');
+            }
+
+            $attachmentId = $attachment->id;
+            $attachment->delete();
+
+            $filename = $attachment->filename;
+
+            Log::create([
+                'description' => 'Deletou um anexo',
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $filename]),
+            ]);
+
+            return ['status' => true, 'data' => ['attachmentId' => $attachmentId]];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
 }
