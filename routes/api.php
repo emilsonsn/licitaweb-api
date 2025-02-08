@@ -72,6 +72,14 @@ Route::middleware('jwt')->group(function () {
         Route::delete('{id}', [TenderController::class, 'delete']);
     });
 
+    Route::prefix('tender-item')->group(function () {
+        Route::get('search', [TenderController::class, 'search']);
+        Route::get('{id}', [TenderController::class, 'getById']);
+        Route::post('create', [TenderController::class, 'create']);
+        Route::patch('{id}', [TenderController::class, 'update']);
+        Route::delete('{id}', [TenderController::class, 'delete']);
+    });
+
     Route::prefix('modality')->group(function () {
         Route::get('all', [ModalityController::class, 'all']);
         Route::get('search', [ModalityController::class, 'search']);

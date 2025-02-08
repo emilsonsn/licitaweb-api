@@ -138,7 +138,6 @@ class ProductService
             if (! $product) {
                 $product = Product::find($product_id);
                 if (! $product) {
-                    $product = Product::find($product_id);
                     throw new Exception('Product not found', 400);
                 }
             }
