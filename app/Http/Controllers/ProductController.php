@@ -68,6 +68,17 @@ class ProductController extends Controller
         return $this->response($result);
     }
 
+    public function deleteAttachment($attachmentId)
+    {
+        $result = $this->productService->deleteAttachment($attachmentId);
+
+        if ($result['status']) {
+            $result['message'] = 'Anexo excluído com sucesso';
+        }
+
+        return $this->response($result);
+    }
+
     private function response($result)
     {
         return response()->json([
