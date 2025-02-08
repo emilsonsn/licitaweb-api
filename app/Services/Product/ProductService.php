@@ -31,7 +31,7 @@ class ProductService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
 
-            $products = Product::with('files')->query();
+            $products = Product::with('files');
 
             if (isset($search_term)) {
                 $products->where('name', 'LIKE', "%{$search_term}%")
