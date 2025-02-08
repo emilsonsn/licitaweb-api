@@ -40,7 +40,7 @@ class Product extends Model
         return $this->belongsTo(Supplier::class);
     }
 
-    public function files()
+    public function attachments()
     {
         return $this->hasMany(ProductFile::class);
     }
