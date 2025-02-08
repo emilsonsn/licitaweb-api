@@ -39,4 +39,9 @@ class Product extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
+
+    public function files()
+    {
+        return $this->hasMany(ProductFile::class);
+    }
 }

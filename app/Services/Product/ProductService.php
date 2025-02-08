@@ -4,6 +4,7 @@ namespace App\Services\Product;
 
 use App\Models\Log;
 use App\Models\Product;
+use App\Models\ProductFile;
 use App\Models\ProductOccurrence;
 use App\Models\User;
 use Exception;
@@ -53,7 +54,7 @@ class ProductService
 
             $products = ProductOccurrence::query();
 
-            if(!$product_id){
+            if (!$product_id) {
                 throw new Exception('Id de produto obrigatorio', 400);
             }
 
@@ -89,6 +90,8 @@ class ProductService
                 'taxes_fees' => 'required|numeric',
                 'profit_margin' => 'required|numeric',
                 'supplier_id' => 'required|exists:suppliers,id',
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -98,6 +101,20 @@ class ProductService
             }
 
             $product = Product::create($validator->validated());
+
+            $attachments = [];
+            if ($request->attachments) {
+                foreach ($request->attachments as $attachment) {
+                    $path = $attachment->store('product/attachments', 'public');
+                    $fullPath = 'storage/' . $path;
+
+                    $attachments[] = ProductFile::create([
+                        'product_id' => $product->id,
+                        'filename' => $attachment->getClientOriginalName(),
+                        'path' => $fullPath,
+                    ]);
+                }
+            }
 
             Log::create([
                 'description' => 'Created a product',
@@ -126,7 +143,7 @@ class ProductService
                 }
             }
 
-            if ($product->id != $product_id){
+            if ($product->id != $product_id) {
                 throw new Exception('SKU cadastrado em outro produto', 400);
             }
 
@@ -145,6 +162,8 @@ class ProductService
                 'taxes_fees' => 'required|numeric',
                 'profit_margin' => 'required|numeric',
                 'supplier_id' => 'required|exists:suppliers,id',
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -153,7 +172,7 @@ class ProductService
                 throw new Exception($validator->errors(), 400);
             }
 
-            if($product->purchase_cost != $request->purchase_cost) {
+            if ($product->purchase_cost != $request->purchase_cost) {
                 $user = User::find(Auth::user()->id);
                 ProductOccurrence::create([
                     'title' => 'Alteração de custo de aquisição',
@@ -164,6 +183,21 @@ class ProductService
 
             $product->update($validator->validated());
 
+            $attachments = [];
+            if ($request->attachments) {
+                foreach ($request->attachments as $attachment) {
+                    $path = $attachment->store('product/attachments', 'public');
+                    $fullPath = 'storage/' . $path;
+
+                    $attachments[] = ProductFile::updateOrCreate(
+                        [
+                            'product_id' => $product->id,
+                            'filename' => $attachment->getClientOriginalName(),
+                            'path' => $fullPath,
+                        ]
+                    );
+                }
+            }
 
             Log::create([
                 'description' => 'Updated a product',
