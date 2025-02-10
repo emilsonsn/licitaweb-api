@@ -44,4 +44,9 @@ class Product extends Model
     {
         return $this->hasMany(ProductFile::class);
     }
+
+    public function tender_items()
+    {
+        return $this->hasMany(TenderItem::class);
+    }
 }

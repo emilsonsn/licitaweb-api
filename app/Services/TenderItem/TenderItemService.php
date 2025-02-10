@@ -19,7 +19,7 @@ class TenderItemService
     public function all()
     {
         try {
-            $tenders = Tender::get();
+            $tenders = Tender::with('products')->get();
 
             return ['status' => true, 'data' => $tenders];
         } catch (Exception $error) {
@@ -34,7 +34,7 @@ class TenderItemService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
 
-            $tenderItems = TenderItem::query();
+            $tenderItems = TenderItem::with('products');
 
             if (!$tenders_id) {
                 throw new Exception('Id do edital obrigatorio', 400);
@@ -56,13 +56,13 @@ class TenderItemService
     public function getById($id)
     {
         try {
-            $tenderItems = TenderItem::find($id);
+            $tenderItems = TenderItem::with('products')->find($id);
 
-            if (! isset($tender)) {
+            if (! isset($tenderItems)) {
                 throw new Exception('Produto do edital não encontrado');
             }
 
-            return ['status' => true, 'data' => $tender];
+            return ['status' => true, 'data' => $tenderItems];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
