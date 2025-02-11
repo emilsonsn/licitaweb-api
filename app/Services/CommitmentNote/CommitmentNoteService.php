@@ -2,12 +2,12 @@
 
 namespace App\Services\CommitmentNote;
 
+use App\Models\Log;
 use App\Models\CommitmentNote;
 use App\Models\CommitmentNoteProduct;
-use Auth;
 use Exception;
 use Illuminate\Support\Facades\Validator;
-use Log;
+use Illuminate\Support\Facades\Auth;
 
 class CommitmentNoteService
 {
