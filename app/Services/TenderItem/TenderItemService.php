@@ -72,9 +72,10 @@ class TenderItemService
     {
         try {
             $rules = [
-                'product_id' => 'required|number',
-                'tender_id' => 'required|number',
-                'quantity' => 'required|number',
+                'tenderItens' => 'required|array',
+                'tenderItens.product_id' => 'required|number',
+                'tenderItens.tender_id' => 'required|number',
+                'tenderItens.quantity' => 'required|number',
             ];
 
             $data = $request->all();
@@ -84,15 +85,28 @@ class TenderItemService
                 throw new Exception($validator->errors(), 400);
             }
 
-            $tenderItem = TenderItem::create($validator->validated());
+            $tenderItens = [];
+            if ($request->tenderItens) {
+                foreach ($request->tenderItens as $tenderItens) {
+                    $tenderItens[] = TenderItem::updateOrCreate(
+                        [
+                            'product_id' => $tenderItens->product_id,
+                            'tender_id' => $tenderItens->tender_id,
+                            'quantity' => $tenderItens->quantity,
+                        ]
+                    );
+                }
+            }
+
+            // $tenderItem = TenderItem::create($validator->validated());
 
             Log::create([
-                'description' => 'Criou um edital',
+                'description' => 'Criou itens de edital',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode($request->all()),
             ]);
 
-            return ['status' => true, 'data' => $tenderItem];
+            return ['status' => true, 'data' => $tenderItens];
         } catch (Exception $error) {
             DB::rollBack();
 
