@@ -45,8 +45,8 @@ class Product extends Model
         return $this->hasMany(ProductFile::class);
     }
 
-    public function tender_items()
+    public function tender_products()
     {
-        return $this->hasMany(TenderItem::class);
+        return $this->hasMany(TenderProduct::class);
     }
 }
