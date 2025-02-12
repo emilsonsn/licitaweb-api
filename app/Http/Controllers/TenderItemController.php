@@ -2,35 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Tender\TenderService;
+use App\Services\TenderItem\TenderItemService;
 use Illuminate\Http\Request;
 
-class TenderController extends Controller
+class TenderItemController extends Controller
 {
-    private $tenderService;
+    private $tenderItemService;
 
-    public function __construct(TenderService $tenderService)
+    public function __construct(TenderItemService $tenderItemService)
     {
-        $this->tenderService = $tenderService;
+        $this->tenderItemService = $tenderItemService;
     }
 
     public function all()
     {
-        $result = $this->tenderService->all();
+        $result = $this->tenderItemService->all();
 
         return $this->response($result);
     }
 
     public function search(Request $request)
     {
-        $result = $this->tenderService->search($request);
+        $result = $this->tenderItemService->search($request);
 
         return $result;
     }
 
     public function getById($id)
     {
-        $result = $this->tenderService->getById($id);
+        $result = $this->tenderItemService->getById($id);
 
         if ($result['status']) {
             $result['message'] = 'Licitação encontrada';
@@ -41,7 +41,7 @@ class TenderController extends Controller
 
     public function create(Request $request)
     {
-        $result = $this->tenderService->create($request);
+        $result = $this->tenderItemService->create($request);
 
         if ($result['status']) {
             $result['message'] = 'Licitação criada com sucesso';
@@ -52,7 +52,7 @@ class TenderController extends Controller
 
     public function update(Request $request, $id)
     {
-        $result = $this->tenderService->update($request, $id);
+        $result = $this->tenderItemService->update($request, $id);
 
         if ($result['status']) {
             $result['message'] = 'Licitação atualizada com sucesso';
@@ -63,7 +63,7 @@ class TenderController extends Controller
 
     public function delete($id)
     {
-        $result = $this->tenderService->delete($id);
+        $result = $this->tenderItemService->delete($id);
 
         if ($result['status']) {
             $result['message'] = 'Licitação excluída com sucesso';

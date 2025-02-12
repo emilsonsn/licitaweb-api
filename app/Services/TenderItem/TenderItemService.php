@@ -1,14 +1,10 @@
 <?php
 
-namespace App\Services\Tender;
+namespace App\Services\TenderItem;
 
 use App\Models\Log;
-use App\Models\Status;
 use App\Models\Tender;
-use App\Models\TenderAttachment;
 use App\Models\TenderItem;
-use App\Models\TenderStatus;
-use App\Models\TenderTask;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -58,7 +54,7 @@ class TenderItemService
         try {
             $tenderItems = TenderItem::with('products')->find($id);
 
-            if (! isset($tenderItems)) {
+            if (!isset($tenderItems)) {
                 throw new Exception('Produto do edital não encontrado');
             }
 
@@ -73,9 +69,9 @@ class TenderItemService
         try {
             $rules = [
                 'tenderItens' => 'required|array',
-                'tenderItens.product_id' => 'required|number',
-                'tenderItens.tender_id' => 'required|number',
-                'tenderItens.quantity' => 'required|number',
+                'tenderItens.*.product_id' => 'required|integer',
+                'tenderItens.*.tender_id' => 'required|integer',
+                'tenderItens.*.quantity' => 'required|integer',
             ];
 
             $data = $request->all();
@@ -156,7 +152,7 @@ class TenderItemService
         try {
             $tenderItem = TenderItem::find($tenderItem_id);
 
-            if (! $tenderItem) {
+            if (!$tenderItem) {
                 throw new Exception('item de edital não encontrada');
             }
 

@@ -15,6 +15,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierOccurrenceController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenderController;
+use App\Http\Controllers\TenderItemController;
 use App\Http\Controllers\TenderOccurrenceController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
@@ -43,7 +44,8 @@ Route::middleware('jwt')->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::middleware(AdminMiddleware::class)->group(function () {});
+    Route::middleware(AdminMiddleware::class)->group(function () {
+    });
 
     Route::prefix('user')->group(function () {
         Route::get('all', [UserController::class, 'all']);
@@ -73,11 +75,11 @@ Route::middleware('jwt')->group(function () {
     });
 
     Route::prefix('tender-item')->group(function () {
-        Route::get('search', [TenderController::class, 'search']);
-        Route::get('{id}', [TenderController::class, 'getById']);
-        Route::post('create', [TenderController::class, 'create']);
-        Route::patch('{id}', [TenderController::class, 'update']);
-        Route::delete('{id}', [TenderController::class, 'delete']);
+        Route::get('search', [TenderItemController::class, 'search']);
+        Route::get('{id}', [TenderItemController::class, 'getById']);
+        Route::post('create', [TenderItemController::class, 'create']);
+        Route::patch('{id}', [TenderItemController::class, 'update']);
+        Route::delete('{id}', [TenderItemController::class, 'delete']);
     });
 
     Route::prefix('modality')->group(function () {
