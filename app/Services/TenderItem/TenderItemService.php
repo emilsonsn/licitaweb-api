@@ -5,6 +5,7 @@ namespace App\Services\TenderItem;
 use App\Models\Log;
 use App\Models\Tender;
 use App\Models\TenderItem;
+use App\Models\Tenderproduct;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +16,7 @@ class TenderItemService
     public function all()
     {
         try {
-            $tenders = Tender::with('products')->get();
+            $tenders = TenderProduct::get();
 
             return ['status' => true, 'data' => $tenders];
         } catch (Exception $error) {
@@ -30,13 +31,13 @@ class TenderItemService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
 
-            $tenderItems = TenderItem::with('products');
+            $tenderItems = TenderProduct::with('products');
 
             if (!$tenders_id) {
                 throw new Exception('Id do edital obrigatorio', 400);
             }
 
-            $tenderItems->where('product_id', $tenders_id);
+            $tenderItems->where('tender_id', $tenders_id);
 
             if (isset($search_term)) {
                 $tenderItems->where('number', 'LIKE', "%{$search_term}%")
@@ -52,7 +53,7 @@ class TenderItemService
     public function getById($id)
     {
         try {
-            $tenderItems = TenderItem::with('products')->find($id);
+            $tenderItems = TenderProduct::with('products')->find($id);
 
             if (!isset($tenderItems)) {
                 throw new Exception('Produto do edital não encontrado');
@@ -85,7 +86,7 @@ class TenderItemService
 
             if (isset($data['tenderItens']) && is_array($data['tenderItens'])) {
                 foreach ($data['tenderItens'] as $item) {
-                    $tenderItems[] = TenderItem::updateOrCreate(
+                    $tenderItems[] = TenderProduct::updateOrCreate(
                         [
                             'product_id' => $item['product_id'],
                             'tender_id' => $item['tender_id'],
@@ -114,7 +115,7 @@ class TenderItemService
     {
         try {
 
-            $tenderItem = TenderItem::find($tenderItem_id);
+            $tenderItem = TenderProduct::find($tenderItem_id);
 
             $rules = [
                 'product_id' => 'required|number',
@@ -150,7 +151,7 @@ class TenderItemService
     public function delete($tenderItem_id)
     {
         try {
-            $tenderItem = TenderItem::find($tenderItem_id);
+            $tenderItem = TenderProduct::find($tenderItem_id);
 
             if (!$tenderItem) {
                 throw new Exception('item de edital não encontrada');
