@@ -31,7 +31,7 @@ class TenderItemService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
 
-            $tenderItems = TenderProduct::with('products');
+            $tenderItems = TenderProduct::with('product');
 
             if (!$tenders_id) {
                 throw new Exception('Id do edital obrigatorio', 400);
@@ -53,7 +53,7 @@ class TenderItemService
     public function getById($id)
     {
         try {
-            $tenderItems = TenderProduct::with('products')->find($id);
+            $tenderItems = TenderProduct::with('product')->find($id);
 
             if (!isset($tenderItems)) {
                 throw new Exception('Produto do edital não encontrado');

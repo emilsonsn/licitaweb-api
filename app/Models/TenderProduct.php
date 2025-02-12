@@ -26,7 +26,7 @@ class TenderProduct extends Model
         return $this->belongsTo(Tender::class);
     }
 
-    public function products()
+    public function product()
     {
         return $this->belongsTo(Product::class);
     }
