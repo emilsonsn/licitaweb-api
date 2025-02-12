@@ -44,7 +44,7 @@ class TenderItemController extends Controller
         $result = $this->tenderItemService->create($request);
 
         if ($result['status']) {
-            $result['message'] = 'Licitação criada com sucesso';
+            $result['message'] = 'Operação realizada com sucesso';
         }
 
         return $this->response($result);

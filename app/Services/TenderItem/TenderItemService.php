@@ -3,8 +3,6 @@
 namespace App\Services\TenderItem;
 
 use App\Models\Log;
-use App\Models\Tender;
-use App\Models\TenderItem;
 use App\Models\Tenderproduct;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -82,24 +80,29 @@ class TenderItemService
                 throw new Exception($validator->errors(), 400);
             }
 
-            $tenderItems = []; // Variável corretamente definida
+            $tender_id = $data['tenderItens'][0]['tender_id'];
+            $existingItems = TenderProduct::where('tender_id', $tender_id)->get()->keyBy('product_id');
+            $tenderItems = [];
+            $processedProductIds = [];
 
-            if (isset($data['tenderItens']) && is_array($data['tenderItens'])) {
-                foreach ($data['tenderItens'] as $item) {
-                    $tenderItems[] = TenderProduct::updateOrCreate(
-                        [
-                            'product_id' => $item['product_id'],
-                            'tender_id' => $item['tender_id'],
-                        ],
-                        [
-                            'quantity' => $item['quantity'],
-                        ]
-                    );
-                }
+            foreach ($data['tenderItens'] as $item) {
+                $processedProductIds[] = $item['product_id'];
+                $tenderItems[] = TenderProduct::updateOrCreate(
+                    [
+                        'product_id' => $item['product_id'],
+                        'tender_id' => $item['tender_id'],
+                    ],
+                    ['quantity' => $item['quantity']]
+                );
+            }
+
+            $itemsToDelete = $existingItems->except($processedProductIds);
+            foreach ($itemsToDelete as $item) {
+                $item->delete();
             }
 
             Log::create([
-                'description' => 'Criou itens de edital',
+                'description' => 'Criou, atualizou ou removeu itens do edital',
                 'user_id' => Auth::id(),
                 'request' => json_encode($request->all()),
             ]);
