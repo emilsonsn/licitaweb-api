@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\TenderItem\TenderService;
+use App\Services\Tender\TenderService;
 use Illuminate\Http\Request;
 
 class TenderController extends Controller
