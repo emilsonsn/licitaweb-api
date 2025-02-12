@@ -188,5 +188,6 @@ Route::middleware('jwt')->group(function () {
         Route::post('{contractId}/payment', [ContractController::class, 'createPayment']);
         Route::delete('payment/{paymentId}', [ContractController::class, 'deletePayment']);
         Route::delete('product/{contractProductId}', [ContractController::class, 'deleteContractProduct']);
+        Route::delete('attachment/{attachmentId}', [ContractController::class, 'deleteAttachment']);
     });
 });
