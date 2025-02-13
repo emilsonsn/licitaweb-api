@@ -17,7 +17,7 @@ class ContractService
     public function all()
     {
         try {
-            $contracts = Contract::get();
+            $contracts = Contract::with('files')->get();
 
             return ['status' => true, 'data' => $contracts];
         } catch (Exception $error) {
@@ -31,7 +31,7 @@ class ContractService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
 
-            $contracts = Contract::query();
+            $contracts = Contract::with('files');
 
             if (isset($search_term)) {
                 $contracts->where('contract_number', 'LIKE', "%{$search_term}%")
