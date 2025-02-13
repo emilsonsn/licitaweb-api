@@ -25,7 +25,7 @@ class ContractController extends Controller
     {
         $result = $this->contractService->search($request);
 
-        return $this->response($result);
+        return $result;
     }
 
     public function create(Request $request)
