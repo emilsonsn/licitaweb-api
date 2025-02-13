@@ -48,7 +48,7 @@ class Contract extends Model
         return $this->hasMany(ContractPayment::class);
     }
 
-    public function files()
+    public function attachments()
     {
         return $this->hasMany(ContractFile::class);
     }
