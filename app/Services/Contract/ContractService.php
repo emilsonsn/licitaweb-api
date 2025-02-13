@@ -31,7 +31,7 @@ class ContractService
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
 
-            $contracts = Contract::with('files');
+            $contracts = Contract::with('files', 'tender.files');
 
             if (isset($search_term)) {
                 $contracts->where('contract_number', 'LIKE', "%{$search_term}%")
