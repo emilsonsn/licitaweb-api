@@ -28,6 +28,13 @@ class ProductController extends Controller
         return $result;
     }
 
+    public function historical(Request $request)
+    {
+        $result = $this->productService->historical($request);
+
+        return $result;
+    }
+
     public function create(Request $request)
     {
         $result = $this->productService->create($request);
@@ -56,6 +63,17 @@ class ProductController extends Controller
 
         if ($result['status']) {
             $result['message'] = 'Produto deletado com sucesso';
+        }
+
+        return $this->response($result);
+    }
+
+    public function deleteAttachment($attachmentId)
+    {
+        $result = $this->productService->deleteAttachment($attachmentId);
+
+        if ($result['status']) {
+            $result['message'] = 'Anexo excluído com sucesso';
         }
 
         return $this->response($result);

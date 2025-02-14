@@ -15,6 +15,7 @@ use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierOccurrenceController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TenderController;
+use App\Http\Controllers\TenderItemController;
 use App\Http\Controllers\TenderOccurrenceController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\AdminMiddleware;
@@ -43,7 +44,8 @@ Route::middleware('jwt')->group(function () {
 
     Route::post('logout', [AuthController::class, 'logout']);
 
-    Route::middleware(AdminMiddleware::class)->group(function () {});
+    Route::middleware(AdminMiddleware::class)->group(function () {
+    });
 
     Route::prefix('user')->group(function () {
         Route::get('all', [UserController::class, 'all']);
@@ -72,6 +74,14 @@ Route::middleware('jwt')->group(function () {
         Route::delete('{id}', [TenderController::class, 'delete']);
     });
 
+    Route::prefix('tender-item')->group(function () {
+        Route::get('search', [TenderItemController::class, 'search']);
+        Route::get('{id}', [TenderItemController::class, 'getById']);
+        Route::post('create', [TenderItemController::class, 'create']);
+        Route::patch('{id}', [TenderItemController::class, 'update']);
+        Route::delete('{id}', [TenderItemController::class, 'delete']);
+    });
+
     Route::prefix('modality')->group(function () {
         Route::get('all', [ModalityController::class, 'all']);
         Route::get('search', [ModalityController::class, 'search']);
@@ -85,6 +95,7 @@ Route::middleware('jwt')->group(function () {
         Route::get('search', [ClientController::class, 'search']);
         Route::post('create', [ClientController::class, 'create']);
         Route::patch('{id}', [ClientController::class, 'update']);
+        Route::delete('attachment/{attachmentId}', [ClientController::class, 'deleteAttachment']);
         Route::delete('{id}', [ClientController::class, 'delete']);
     });
 
@@ -107,8 +118,10 @@ Route::middleware('jwt')->group(function () {
     Route::prefix('product')->group(function () {
         Route::get('all', [ProductController::class, 'all']);
         Route::get('search', [ProductController::class, 'search']);
+        Route::get('historical', [ProductController::class, 'historical']);
         Route::post('create', [ProductController::class, 'create']);
         Route::patch('{id}', [ProductController::class, 'update']);
+        Route::delete('attachment/{attachmentId}', [ProductController::class, 'deleteAttachment']);
         Route::delete('{id}', [ProductController::class, 'delete']);
     });
 
@@ -175,5 +188,6 @@ Route::middleware('jwt')->group(function () {
         Route::post('{contractId}/payment', [ContractController::class, 'createPayment']);
         Route::delete('payment/{paymentId}', [ContractController::class, 'deletePayment']);
         Route::delete('product/{contractProductId}', [ContractController::class, 'deleteContractProduct']);
+        Route::delete('attachment/{attachmentId}', [ContractController::class, 'deleteAttachment']);
     });
 });

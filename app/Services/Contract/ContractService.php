@@ -3,6 +3,7 @@
 namespace App\Services\Contract;
 
 use App\Models\Contract;
+use App\Models\ContractFile;
 use App\Models\ContractPayment;
 use App\Models\ContractProduct;
 use App\Models\Log;
@@ -16,7 +17,7 @@ class ContractService
     public function all()
     {
         try {
-            $contracts = Contract::get();
+            $contracts = Contract::with('client', 'attachments', 'tender.attachments')->get();
 
             return ['status' => true, 'data' => $contracts];
         } catch (Exception $error) {
@@ -29,13 +30,41 @@ class ContractService
         try {
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
+            $client_id = $request->client_id ?? null;
+            $tender_id = $request->tender_id ?? null;
+            $status = $request->status ?? null;
+            $start_date = $request->start_date ?? null;
+            $end_date = $request->end_date ?? null;
 
-            $contracts = Contract::query();
+            $contracts = Contract::with('client', 'attachments', 'tender.attachments');
 
             if (isset($search_term)) {
                 $contracts->where('contract_number', 'LIKE', "%{$search_term}%")
-                    ->orWhere('contract_object', 'LIKE', "%{$search_term}%")
-                    ->orWhere('status', 'LIKE', "%{$search_term}%");
+                    ->orWhere('contract_object', 'LIKE', "%{$search_term}%");
+            }
+
+            if (isset($client_id)) {
+                $contracts->where('client_id', $client_id);
+            }
+
+            if (isset($tender_id)) {
+                $contracts->where('tender_id', $tender_id);
+            }
+
+            if (isset($status)) {
+                $contracts->where('status', $status);
+            }
+
+            if (isset($start_date) && isset($end_date)) {
+                if ($start_date == $end_date) {
+                    $contracts->whereDate('signature_date', $start_date);
+                } else {
+                    $contracts->whereBetween('signature_date', [$start_date, $end_date]);
+                }
+            } elseif (isset($start_date)) {
+                $contracts->whereDate('signature_date', '>=', $start_date);
+            } elseif (isset($end_date)) {
+                $contracts->whereDate('signature_date', '<=', $end_date);
             }
 
             return $contracts->paginate($perPage);
@@ -60,6 +89,8 @@ class ContractService
                 'payment_conditions' => 'required|string',
                 'observations' => 'nullable|string',
                 'products' => 'nullable|array',
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -77,6 +108,22 @@ class ContractService
                         'product_id' => $product['product_id'],
                         'quantity' => $product['quantity'],
                     ]);
+                }
+            }
+
+            $attachments = [];
+            if ($request->attachments) {
+                foreach ($request->attachments as $attachment) {
+                    $path = $attachment->store('contract/attachments', 'public');
+                    $fullPath = 'storage/' . $path;
+
+                    $attachments[] = ContractFile::updateOrCreate(
+                        [
+                            'contract_id' => $contract->id,
+                            'filename' => $attachment->getClientOriginalName(),
+                            'path' => $fullPath,
+                        ]
+                    );
                 }
             }
 
@@ -110,6 +157,8 @@ class ContractService
                 'payment_conditions' => 'required|string',
                 'observations' => 'nullable|string',
                 'products' => 'nullable|array',
+                'attachments' => 'nullable|array',
+                'attachments.*' => 'file|mimes:pdf,doc,docx,jpg,png,xls,xlsx|max:10240',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -136,6 +185,22 @@ class ContractService
                         [
                             'quantity' => $product['quantity'],
                         ]);
+                }
+            }
+
+            $attachments = [];
+            if ($request->attachments) {
+                foreach ($request->attachments as $attachment) {
+                    $path = $attachment->store('contract/attachments', 'public');
+                    $fullPath = 'storage/' . $path;
+
+                    $attachments[] = ContractFile::updateOrCreate(
+                        [
+                            'contract_id' => $contractToUpdate->id,
+                            'filename' => $attachment->getClientOriginalName(),
+                            'path' => $fullPath,
+                        ]
+                    );
                 }
             }
 
@@ -227,6 +292,32 @@ class ContractService
             $contractProduct->delete();
 
             return ['status' => true, 'message' => 'Produto desvinculado com sucesso'];
+        } catch (Exception $error) {
+            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+        }
+    }
+
+    public function deleteAttachment($attachmentId)
+    {
+        try {
+            $attachment = ContractFile::find($attachmentId);
+
+            if (! $attachment) {
+                throw new Exception('Anexo não encontrado');
+            }
+
+            $attachmentId = $attachment->id;
+            $attachment->delete();
+
+            $filename = $attachment->filename;
+
+            Log::create([
+                'description' => 'Deletou um anexo',
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $filename]),
+            ]);
+
+            return ['status' => true, 'data' => ['attachmentId' => $attachmentId]];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }

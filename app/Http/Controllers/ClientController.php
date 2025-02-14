@@ -50,6 +50,17 @@ class ClientController extends Controller
         return $this->response($result);
     }
 
+    public function deleteAttachment($attachmentId)
+    {
+        $result = $this->clientService->deleteAttachment($attachmentId);
+
+        if ($result['status']) {
+            $result['message'] = 'Anexo excluído com sucesso';
+        }
+
+        return $this->response($result);
+    }
+
     public function delete($id)
     {
         $result = $this->clientService->delete($id);

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProductOccurrenceFile extends Model
+class ContractFile extends Model
 {
     use HasFactory;
 
@@ -13,12 +13,12 @@ class ProductOccurrenceFile extends Model
 
     const UPDATED_AT = 'updated_at';
 
-    public $table = 'product_occurrence_files';
+    public $table = 'contract_files';
 
     public $fillable = [
         'filename',
         'path',
-        'product_occurrence_id',
+        'contract_id',
     ];
 
     public function getPathAttribute($value)
@@ -26,8 +26,8 @@ class ProductOccurrenceFile extends Model
         return $value ? asset('storage/'.$value) : null;
     }
 
-    public function occurrence()
+    public function contract()
     {
-        return $this->belongsTo(ProductOccurrence::class);
+        return $this->belongsTo(Contract::class);
     }
 }

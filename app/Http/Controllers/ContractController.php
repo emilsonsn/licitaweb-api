@@ -25,7 +25,7 @@ class ContractController extends Controller
     {
         $result = $this->contractService->search($request);
 
-        return $this->response($result);
+        return $result;
     }
 
     public function create(Request $request)
@@ -89,6 +89,17 @@ class ContractController extends Controller
 
         if ($result['status']) {
             $result['message'] = 'Produto desvinculado com sucesso';
+        }
+
+        return $this->response($result);
+    }
+
+    public function deleteAttachment($attachmentId)
+    {
+        $result = $this->contractService->deleteAttachment($attachmentId);
+
+        if ($result['status']) {
+            $result['message'] = 'Anexo excluído com sucesso';
         }
 
         return $this->response($result);
