@@ -47,11 +47,11 @@ class ContractService
                 $contracts->where('client_id', $client_id);
             }
 
-            if (isset($client_id)) {
+            if (isset($tender_id)) {
                 $contracts->where('tender_id', $tender_id);
             }
 
-            if (isset($client_id)) {
+            if (isset($status)) {
                 $contracts->where('status', $status);
             }
 
