@@ -62,9 +62,9 @@ class ContractService
                     $contracts->whereBetween('signature_date', [$start_date, $end_date]);
                 }
             } elseif (isset($start_date)) {
-                $contracts->whereDate('signature_date', '>', $start_date);
+                $contracts->whereDate('signature_date', '>=', $start_date);
             } elseif (isset($end_date)) {
-                $contracts->whereDate('signature_date', '<', $end_date);
+                $contracts->whereDate('signature_date', '<=', $end_date);
             }
 
             return $contracts->paginate($perPage);
