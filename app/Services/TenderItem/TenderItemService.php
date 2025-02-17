@@ -3,7 +3,7 @@
 namespace App\Services\TenderItem;
 
 use App\Models\Log;
-use App\Models\Tenderproduct;
+use App\Models\TenderProduct;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
