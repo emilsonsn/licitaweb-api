@@ -64,7 +64,7 @@
         <p><strong>Senha Temporária:</strong> {{ $password }}</p>
         <p>Recomendamos que você altere sua senha após o primeiro login para garantir a segurança da sua conta.</p>
         <p>
-            <a href="{{ env('FRONT_URL') . '/login' }}">Clique aqui para fazer login</a></p>
+            <a href="{{ config('app.front_url') . '/login' }}">Clique aqui para fazer login</a>
         <div class="footer">
             <p>© {{ date('Y') }} Andrade Engenharia. Todos os direitos reservados.</p>
         </div>
