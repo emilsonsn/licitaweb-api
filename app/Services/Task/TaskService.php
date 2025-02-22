@@ -31,6 +31,7 @@ class TaskService
             $tender_id = $request->tender_id ?? null;
             $user_id = $request->user_id ?? null;
             $status = $request->status ?? null;
+            $client_id = $request->client_id ?? null;
 
             $tasks = TenderTask::query();
 
@@ -49,6 +50,10 @@ class TaskService
 
             if ($user_id) {
                 $tasks->where('user_id', $user_id);
+            }
+
+            if ($client_id) {
+                $tasks->where('client_id', $user_id);
             }
 
             if ($status) {
@@ -71,6 +76,7 @@ class TaskService
                 'status' => 'nullable|string|in:Pending,InProgress,Completed',
                 'tender_id' => 'required|integer',
                 'user_id' => 'nullable|integer',
+                'client_id' => 'nullable|integer',
             ];
 
             $validator = Validator::make($request->all(), $rules);
@@ -109,6 +115,7 @@ class TaskService
                 'description' => 'nullable|string',
                 'tender_id' => 'required|integer',
                 'user_id' => 'nullable|integer',
+                'client_id' => 'nullable|integer',
             ];
 
             $validator = Validator::make($request->all(), $rules);
