@@ -137,6 +137,7 @@ class TenderService
 
             $rules = [
                 'external_id' => 'nullable|string',
+                'auction_date' => 'nullable|date',
                 'number' => 'nullable|string',
                 'organ' => 'nullable|string',
                 'modality_id' => 'required|integer|exists:modalities,id',
@@ -157,6 +158,10 @@ class TenderService
             }
 
             $data = $request->all();
+            if ($request->input('status_id') == 3) {
+                $data['auction_date'] = now();
+            }
+
             $validator = Validator::make($data, $rules);
 
             if ($validator->fails()) {
@@ -230,6 +235,7 @@ class TenderService
 
             $rules = [
                 'external_id' => 'nullable|string',
+                'auction_date' => 'nullable|date',
                 'number' => 'nullable|string',
                 'organ' => 'nullable|string',
                 'modality_id' => 'required|integer|exists:modalities,id',
@@ -247,6 +253,10 @@ class TenderService
             ];
 
             $data = $request->all();
+            if ($request->input('status_id') == 3) {
+                $data['auction_date'] = now();
+            }
+
             $validator = Validator::make($data, $rules);
 
             if ($validator->fails()) {

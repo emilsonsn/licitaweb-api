@@ -5,6 +5,7 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientOccurrenceController;
 use App\Http\Controllers\CommitmentNoteController;
 use App\Http\Controllers\ContractController;
+use App\Http\Controllers\contractProductController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ModalityController;
 use App\Http\Controllers\NotificationController;
@@ -189,5 +190,13 @@ Route::middleware('jwt')->group(function () {
         Route::delete('payment/{paymentId}', [ContractController::class, 'deletePayment']);
         Route::delete('product/{contractProductId}', [ContractController::class, 'deleteContractProduct']);
         Route::delete('attachment/{attachmentId}', [ContractController::class, 'deleteAttachment']);
+    });
+
+    Route::prefix('contract-product')->group(function () {
+        Route::get('search', [contractProductController::class, 'search']);
+        Route::get('{id}', [contractProductController::class, 'getById']);
+        Route::post('create', [contractProductController::class, 'create']);
+        Route::patch('{id}', [contractProductController::class, 'update']);
+        Route::delete('{id}', [contractProductController::class, 'delete']);
     });
 });
