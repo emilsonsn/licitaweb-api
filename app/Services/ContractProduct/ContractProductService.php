@@ -66,6 +66,7 @@ class ContractProductService
                 'contractProducts.*.product_id' => 'required|integer',
                 'contractProducts.*.contract_id' => 'required|integer',
                 'contractProducts.*.quantity' => 'required|integer',
+                'contractProducts.*.sale_value' => 'required|decimal',
             ];
 
             $data = $request->all();
@@ -89,7 +90,8 @@ class ContractProductService
                         'product_id' => $item['product_id'],
                         'contract_id' => $item['tender_id'],
                     ],
-                    ['quantity' => $item['quantity']]
+                    ['quantity' => $item['quantity']],
+                    ['sale_value' => $item['sale_value']],
                 );
             }
 
@@ -121,6 +123,7 @@ class ContractProductService
                 'product_id' => 'required|number',
                 'tender_id' => 'required|number',
                 'quantity' => 'required|number',
+                'sale_value' => 'required|decimal',
             ];
 
             $data = $request->all();
