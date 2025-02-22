@@ -15,6 +15,7 @@ class ContractProduct extends Model
         'contract_id',
         'product_id',
         'quantity',
+        'sale_value'
     ];
 
     public function contract()

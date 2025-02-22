@@ -2,6 +2,7 @@
 
 namespace App\Services\Tender;
 
+use App\Models\Client;
 use App\Models\Log;
 use App\Models\Status;
 use App\Models\Tender;
@@ -137,6 +138,7 @@ class TenderService
 
             $rules = [
                 'external_id' => 'nullable|string',
+                'auction_date' => 'nullable|date',
                 'number' => 'nullable|string',
                 'organ' => 'nullable|string',
                 'modality_id' => 'required|integer|exists:modalities,id',
@@ -157,6 +159,10 @@ class TenderService
             }
 
             $data = $request->all();
+            if ($request->input('status_id') == 3) {
+                $data['auction_date'] = now();
+            }
+
             $validator = Validator::make($data, $rules);
 
             if ($validator->fails()) {
@@ -166,6 +172,12 @@ class TenderService
             DB::beginTransaction();
 
             $tender = Tender::create($validator->validated());
+
+            if ($request->input('status_id') == 3) {
+                Client::create([
+                    'name' => $request->organ
+                ]);
+            }
 
             $items = [];
             if ($request->items) {
@@ -230,6 +242,7 @@ class TenderService
 
             $rules = [
                 'external_id' => 'nullable|string',
+                'auction_date' => 'nullable|date',
                 'number' => 'nullable|string',
                 'organ' => 'nullable|string',
                 'modality_id' => 'required|integer|exists:modalities,id',
@@ -247,6 +260,10 @@ class TenderService
             ];
 
             $data = $request->all();
+            if ($request->input('status_id') == 3) {
+                $data['auction_date'] = now();
+            }
+
             $validator = Validator::make($data, $rules);
 
             if ($validator->fails()) {
@@ -262,6 +279,12 @@ class TenderService
             DB::beginTransaction();
 
             $tender->update($validator->validated());
+
+            if ($request->input('status_id') == 3) {
+                Client::create([
+                    'name' => $request->organ
+                ]);
+            }
 
             $items = [];
             if ($request->items) {

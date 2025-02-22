@@ -107,6 +107,7 @@ class ContractService
                         'contract_id' => $contract->id,
                         'product_id' => $product['product_id'],
                         'quantity' => $product['quantity'],
+                        'sale_value' => $product['sale_value'],
                     ]);
                 }
             }
@@ -184,6 +185,7 @@ class ContractService
                         ],
                         [
                             'quantity' => $product['quantity'],
+                            'sale_value' => $product['sale_value'],
                         ]);
                 }
             }
