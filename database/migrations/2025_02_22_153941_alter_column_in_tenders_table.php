@@ -13,7 +13,6 @@ return new class extends Migration
     public function up(): void
     {
         DB::table('tenders')
-            ->where('status', 3)
             ->update([
                 'auction_date' => DB::raw('updated_at')
             ]);
