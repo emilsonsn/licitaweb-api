@@ -185,4 +185,7 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+
+    'front_url' => env('FRONT_URL', 'https://default-url.com'),
+
 ];
