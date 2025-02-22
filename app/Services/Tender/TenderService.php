@@ -2,6 +2,7 @@
 
 namespace App\Services\Tender;
 
+use App\Models\Client;
 use App\Models\Log;
 use App\Models\Status;
 use App\Models\Tender;
@@ -172,6 +173,12 @@ class TenderService
 
             $tender = Tender::create($validator->validated());
 
+            if ($request->input('status_id') == 3) {
+                Client::create([
+                    'name' => $request->organ
+                ]);
+            }
+
             $items = [];
             if ($request->items) {
                 foreach ($request->items as $itemData) {
@@ -272,6 +279,12 @@ class TenderService
             DB::beginTransaction();
 
             $tender->update($validator->validated());
+
+            if ($request->input('status_id') == 3) {
+                Client::create([
+                    'name' => $request->organ
+                ]);
+            }
 
             $items = [];
             if ($request->items) {
