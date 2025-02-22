@@ -23,6 +23,7 @@ class TenderTask extends Model
         'description',
         'user_id',
         'tender_id',
+        'client_id',
     ];
 
     public function tender()
