@@ -4,6 +4,7 @@ namespace App\Services\TenderOccurrence;
 
 use App\Models\ClientLog;
 use App\Models\Tender;
+use App\Models\TenderLog;
 use App\Models\TenderOccurrence;
 use App\Models\TenderOccurrenceFile;
 use Exception;
@@ -91,6 +92,15 @@ class TenderOccurrenceService
                     'description' => 'Ocorrencia do edital vinculado ao cliente criado',
                     'user_id' => Auth::user()->id,
                     'client_id' => $tender->client_id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Ocorrencia do edital errematado criada',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
                     'request' => json_encode($request->all())
                 ]);
             }

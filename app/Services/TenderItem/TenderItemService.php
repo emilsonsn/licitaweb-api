@@ -5,6 +5,7 @@ namespace App\Services\TenderItem;
 use App\Models\ClientLog;
 use App\Models\Log;
 use App\Models\Tender;
+use App\Models\TenderLog;
 use App\Models\TenderProduct;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -118,6 +119,15 @@ class TenderItemService
                 ]);
             }
 
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Criou, atualizou ou removeu itens do edital errematado',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Criou, atualizou ou removeu itens do edital',
                 'user_id' => Auth::id(),
@@ -167,6 +177,15 @@ class TenderItemService
                 ]);
             }
 
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Item do edital errematado atualizado',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Atualizou um item do edital',
                 'user_id' => Auth::user()->id,
@@ -204,9 +223,18 @@ class TenderItemService
 
             if(isset($tender->client_id)){
                 ClientLog::create([
-                    'description' => 'Item do edital vinculado ao cliente foi deletada',
+                    'description' => 'Item do edital vinculado ao cliente foi deletado',
                     'user_id' => Auth::user()->id,
                     'client_id' => $tender->client_id,
+                    'request' => json_encode(['object' => $tenderObject])
+                ]);
+            }
+
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Item do edital errematado deletado',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
                     'request' => json_encode(['object' => $tenderObject])
                 ]);
             }

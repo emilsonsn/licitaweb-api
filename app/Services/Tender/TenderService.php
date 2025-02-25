@@ -9,6 +9,7 @@ use App\Models\Status;
 use App\Models\Tender;
 use App\Models\TenderAttachment;
 use App\Models\TenderItem;
+use App\Models\TenderLog;
 use App\Models\TenderStatus;
 use App\Models\TenderTask;
 use Exception;
@@ -229,6 +230,15 @@ class TenderService
                 ]);
             }
 
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Edital errematado foi criado',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Criou um edital',
                 'user_id' => Auth::user()->id,
@@ -350,6 +360,15 @@ class TenderService
                 ]);
             }
 
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Edital errematado foi atualizado',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Atualizou um edital',
                 'user_id' => Auth::user()->id,
@@ -384,6 +403,15 @@ class TenderService
                     'description' => 'Edital vinculado ao cliente foi criado',
                     'user_id' => Auth::user()->id,
                     'client_id' => $tender->client_id,
+                    'request' => json_encode(['action' => 'Edital convertido para contrato'])
+                ]);
+            }
+
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Edital errematado convertido para contrato',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
                     'request' => json_encode(['action' => 'Edital convertido para contrato'])
                 ]);
             }
@@ -468,6 +496,15 @@ class TenderService
                 ]);
             }
 
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Item do edital errematado foi deletado',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
+                    'request' => json_encode(['object' => $tenderObject])
+                ]);
+            }
+
             Log::create([
                 'description' => 'Deletou um edital',
                 'user_id' => Auth::user()->id,
@@ -505,6 +542,15 @@ class TenderService
                     'description' => 'Anexo de edital vinculado ao cliente foi deletado',
                     'user_id' => Auth::user()->id,
                     'client_id' => $tender->client_id,
+                    'request' => json_encode(['name' => $filename])
+                ]);
+            }
+
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Anexo do edital errematado foi deletado',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
                     'request' => json_encode(['name' => $filename])
                 ]);
             }
@@ -549,6 +595,15 @@ class TenderService
                 ]);
             }
 
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Item do edital errematado foi deletado',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
+                    'request' => json_encode(['name' => $itemName])
+                ]);
+            }
+
             Log::create([
                 'description' => 'Deletou um item',
                 'user_id' => Auth::user()->id,
@@ -586,6 +641,15 @@ class TenderService
                     'description' => 'Tarefa de edital vinculado ao cliente foi deletada',
                     'user_id' => Auth::user()->id,
                     'client_id' => $tender->client_id,
+                    'request' => json_encode(['name' => $taskName])
+                ]);
+            }
+
+            if($tender->status == 3){
+                TenderLog::create([
+                    'description' => 'Tarefa do edital errematado foi deletada',
+                    'user_id' => Auth::user()->id,
+                    'tender_id' => $tender->id,
                     'request' => json_encode(['name' => $taskName])
                 ]);
             }

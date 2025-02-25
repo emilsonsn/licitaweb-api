@@ -77,4 +77,9 @@ class Tender extends Model
     {
         return $this->belongsTo(Client::class);
     }
+
+    public function logs()
+    {
+        return $this->hasMany(TenderLog::class);
+    }
 }
