@@ -2,6 +2,7 @@
 
 namespace App\Services\Contract;
 
+use App\Models\ClientLog;
 use App\Models\Contract;
 use App\Models\ContractFile;
 use App\Models\ContractPayment;
@@ -128,6 +129,13 @@ class ContractService
                 }
             }
 
+            ClientLog::create([
+                'description' => 'Contrato vinculado ao cliente foi criado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $request->client_id,
+                'request' => json_encode($request->all())
+            ]);
+
             Log::create([
                 'description' => 'Contrato criado',
                 'user_id' => Auth::user()->id,
@@ -146,7 +154,7 @@ class ContractService
     {
         try {
             $rules = [
-                'contract_number' => 'required|string|unique:contracts,contract_number,'.$contract_id,
+                'contract_number' => 'required|string|unique:contracts,contract_number,' . $contract_id,
                 'client_id' => 'required|exists:clients,id',
                 'tender_id' => 'nullable|exists:tenders,id',
                 'contract_object' => 'required|string',
@@ -186,7 +194,8 @@ class ContractService
                         [
                             'quantity' => $product['quantity'],
                             'sale_value' => $product['sale_value'],
-                        ]);
+                        ]
+                    );
                 }
             }
 
@@ -205,6 +214,13 @@ class ContractService
                     );
                 }
             }
+
+            ClientLog::create([
+                'description' => 'Contrato vinculado ao cliente foi atualizado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $request->client_id,
+                'request' => json_encode($request->all())
+            ]);
 
             Log::create([
                 'description' => 'Contrato atualizado',
@@ -231,6 +247,13 @@ class ContractService
             $contractName = $contract->name;
             $contract->delete();
 
+            ClientLog::create([
+                'description' => 'Contrato vinculado ao cliente foi deletado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $contract->client_id,
+                'request' => json_encode(['name' => $contractName])
+            ]);
+
             Log::create([
                 'description' => 'Contrato deletado',
                 'user_id' => Auth::user()->id,
@@ -256,8 +279,20 @@ class ContractService
             if ($validator->fails()) {
                 throw new Exception($validator->errors(), 400);
             }
+            $contract = Contract::find($request->contract_id);
+
+            if (! $contract) {
+                throw new Exception('Contrato não encontrado');
+            }
 
             $payment = ContractPayment::create($validator->validated());
+
+            ClientLog::create([
+                'description' => 'Pagamento de contrato vinculado ao cliente foi criado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $contract->client_id,
+                'request' => json_encode($request->all())
+            ]);
 
             return ['status' => true, 'data' => $payment];
         } catch (Exception $error) {
@@ -274,7 +309,21 @@ class ContractService
                 throw new Exception('Pagamento não encontrado');
             }
 
+            $contract = Contract::find($payment->contract_id);
+
+            if (! $contract) {
+                throw new Exception('Contrato não encontrado');
+            }
+
+            $paymentDescription = $payment->description;
             $payment->delete();
+
+            ClientLog::create([
+                'description' => 'Pagamento de contrato vinculado ao cliente foi deletado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $contract->client_id,
+                'request' => json_encode(['description' => $paymentDescription])
+            ]);
 
             return ['status' => true, 'message' => 'Pagamento deletado com sucesso'];
         } catch (Exception $error) {
@@ -285,13 +334,27 @@ class ContractService
     public function deleteContractProduct($contractProductId)
     {
         try {
-            $contractProduct = ContractProduct::find($contractProductId);
+            $contractProduct = ContractProduct::with('product')->find($contractProductId);
 
             if (! $contractProduct) {
                 throw new Exception('Produto não vinculado ao contrato');
             }
 
+            $contract = Contract::find($contractProduct->contract_id);
+
+            if (! $contract) {
+                throw new Exception('Contrato não encontrado');
+            }
+
+            $contractProductName = $contractProduct->product?->name ?? 'Produto desconhecido';
             $contractProduct->delete();
+
+            ClientLog::create([
+                'description' => 'Prodito de contrato vinculado ao cliente foi deletado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $contract->client_id,
+                'request' => json_encode(['product name' => $contractProductName])
+            ]);
 
             return ['status' => true, 'message' => 'Produto desvinculado com sucesso'];
         } catch (Exception $error) {
@@ -308,10 +371,23 @@ class ContractService
                 throw new Exception('Anexo não encontrado');
             }
 
+            $contract = Contract::find($attachment->contract_id);
+
+            if (! $contract) {
+                throw new Exception('Contrato não encontrado');
+            }
+
             $attachmentId = $attachment->id;
             $attachment->delete();
 
             $filename = $attachment->filename;
+
+            ClientLog::create([
+                'description' => 'Anexo de contrato vinculado ao cliente foi deletado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $contract->client_id,
+                'request' => json_encode(['name' => $filename])
+            ]);
 
             Log::create([
                 'description' => 'Deletou um anexo',

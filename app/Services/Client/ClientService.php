@@ -4,6 +4,7 @@ namespace App\Services\Client;
 
 use App\Models\Client;
 use App\Models\ClientAttachments;
+use App\Models\ClientLog;
 use App\Models\Log;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -129,7 +130,7 @@ class ClientService
         }
     }
 
-    public function update($request, $user_id)
+    public function update($request, $client_id)
     {
         try {
             $rules = [
@@ -159,7 +160,7 @@ class ClientService
                 throw new Exception($validator->errors());
             }
 
-            $clientToUpdate = Client::find($user_id);
+            $clientToUpdate = Client::find($client_id);
 
             if (! isset($clientToUpdate)) {
                 throw new Exception('Cliente não encontrado');
@@ -181,6 +182,13 @@ class ClientService
                         ]);
                 }
             }
+
+            ClientLog::create([
+                'description' => 'Cliente foi atualizado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $client_id,
+                'request' => json_encode($request->all())
+            ]);
 
             Log::create([
                 'description' => 'Atualizou um cliente',
@@ -237,6 +245,13 @@ class ClientService
             $attachment->delete();
 
             $filename = $attachment->filename;
+
+            ClientLog::create([
+                'description' => 'Um arquivo vinculado ao cliente foi deletado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $attachment->client_id,
+                'request' => json_encode(['name' => $filename])
+            ]);
 
             Log::create([
                 'description' => 'Deletou um anexo de cliente',

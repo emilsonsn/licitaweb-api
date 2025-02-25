@@ -2,6 +2,8 @@
 
 namespace App\Services\TenderOccurrence;
 
+use App\Models\ClientLog;
+use App\Models\Tender;
 use App\Models\TenderOccurrence;
 use App\Models\TenderOccurrenceFile;
 use Exception;
@@ -77,6 +79,21 @@ class TenderOccurrenceService
             }
 
             $tenderOccurrence['files'] = $files;
+
+            $tender = Tender::find($request->tender_id);
+
+            if (! isset($tender)) {
+                throw new Exception('Licitação não encontrado');
+            }
+
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Ocorrencia do edital vinculado ao cliente criado',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
 
             return ['status' => true, 'data' => $tenderOccurrence];
         } catch (Exception $error) {

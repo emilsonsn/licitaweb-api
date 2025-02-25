@@ -2,6 +2,7 @@
 
 namespace App\Services\ClientOccurrence;
 
+use App\Models\ClientLog;
 use App\Models\ClientOccurrence;
 use App\Models\ClientOccurrenceFile;
 use Exception;
@@ -77,6 +78,13 @@ class ClientOccurrenceService
             }
 
             $clientOccurrence['files'] = $files;
+
+            ClientLog::create([
+                'description' => 'Ocorrencia vinculada ao cliente foi criada',
+                'user_id' => Auth::user()->id,
+                'client_id' => $request->client_id,
+                'request' => json_encode($request->all())
+            ]);
 
             return ['status' => true, 'data' => $clientOccurrence];
         } catch (Exception $error) {

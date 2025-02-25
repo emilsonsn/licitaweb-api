@@ -2,7 +2,9 @@
 
 namespace App\Services\TenderItem;
 
+use App\Models\ClientLog;
 use App\Models\Log;
+use App\Models\Tender;
 use App\Models\TenderProduct;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -101,6 +103,21 @@ class TenderItemService
                 $item->delete();
             }
 
+            $tender = Tender::find($tender_id);
+
+            if (! isset($tender)) {
+                throw new Exception('Licitação não encontrado');
+            }
+
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Criou, atualizou ou removeu itens do edital vinculado ao cliente',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Criou, atualizou ou removeu itens do edital',
                 'user_id' => Auth::id(),
@@ -135,6 +152,21 @@ class TenderItemService
 
             $tenderItem->update($validator->validated());
 
+            $tender = Tender::find($tenderItem->tender_id);
+
+            if (! isset($tender)) {
+                throw new Exception('Licitação não encontrado');
+            }
+
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Item do edital vinculado ao cliente atualizado',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Atualizou um item do edital',
                 'user_id' => Auth::user()->id,
@@ -160,9 +192,24 @@ class TenderItemService
                 throw new Exception('item de edital não encontrada');
             }
 
+            $tender = Tender::find($tenderItem->tender_id);
+
+            if (! isset($tender)) {
+                throw new Exception('Licitação não encontrado');
+            }
+
             $tenderId = $tenderItem->id;
             $tenderObject = $tenderItem->object;
             $tenderItem->delete();
+
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Item do edital vinculado ao cliente foi deletada',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode(['object' => $tenderObject])
+                ]);
+            }
 
             Log::create([
                 'description' => 'Deletou um item de edital',

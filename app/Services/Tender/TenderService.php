@@ -3,6 +3,7 @@
 namespace App\Services\Tender;
 
 use App\Models\Client;
+use App\Models\ClientLog;
 use App\Models\Log;
 use App\Models\Status;
 use App\Models\Tender;
@@ -218,6 +219,16 @@ class TenderService
             $tender['attachments'] = $attachments;
             $tender['items'] = $items;
 
+
+            if(isset($request->client_id)){
+                ClientLog::create([
+                    'description' => 'Edital vinculado ao cliente foi criado',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $request->client_id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Criou um edital',
                 'user_id' => Auth::user()->id,
@@ -330,6 +341,15 @@ class TenderService
 
             DB::commit();
 
+            if(isset($request->client_id)){
+                ClientLog::create([
+                    'description' => 'Edital vinculado ao cliente foi atualizado',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $request->client_id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Atualizou um edital',
                 'user_id' => Auth::user()->id,
@@ -358,6 +378,15 @@ class TenderService
 
             $tender->is_contract = true;
             $tender->save();
+
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Edital vinculado ao cliente foi criado',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode(['action' => 'Edital convertido para contrato'])
+                ]);
+            }
 
             return [
                 'status' => true,
@@ -430,6 +459,15 @@ class TenderService
             $tenderObject = $tender->object;
             $tender->delete();
 
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Edital vinculado ao cliente foi deletado',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode(['object' => $tenderObject])
+                ]);
+            }
+
             Log::create([
                 'description' => 'Deletou um edital',
                 'user_id' => Auth::user()->id,
@@ -451,10 +489,25 @@ class TenderService
                 throw new Exception('Anexo não encontrado');
             }
 
+            $tender = Tender::find($attachment->tender_id);
+
+            if (! isset($tender)) {
+                throw new Exception('Licitação não encontrado');
+            }
+
             $attachmentId = $attachment->id;
             $attachment->delete();
 
             $filename = $attachment->filename;
+
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Anexo de edital vinculado ao cliente foi deletado',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode(['name' => $filename])
+                ]);
+            }
 
             Log::create([
                 'description' => 'Deletou um anexo',
@@ -477,9 +530,24 @@ class TenderService
                 throw new Exception('Item não encontrado');
             }
 
+            $tender = Tender::find($item->tender_id);
+
+            if (! isset($tender)) {
+                throw new Exception('Licitação não encontrado');
+            }
+
             $itemId = $item->id;
             $itemName = $item->item;
             $item->delete();
+
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Item de edital vinculado ao cliente foi deletado',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode(['name' => $itemName])
+                ]);
+            }
 
             Log::create([
                 'description' => 'Deletou um item',
@@ -502,10 +570,25 @@ class TenderService
                 throw new Exception('Tarefa não encontrada');
             }
 
+            $tender = Tender::find($task->tender_id);
+
+            if (! isset($tender)) {
+                throw new Exception('Licitação não encontrado');
+            }
+
             $taskId = $task->id;
             $taskName = $task->name;
 
             $task->delete();
+
+            if(isset($tender->client_id)){
+                ClientLog::create([
+                    'description' => 'Tarefa de edital vinculado ao cliente foi deletada',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $tender->client_id,
+                    'request' => json_encode(['name' => $taskName])
+                ]);
+            }
 
             Log::create([
                 'description' => 'Deletou um tarefa',
