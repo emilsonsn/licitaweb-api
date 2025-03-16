@@ -24,10 +24,11 @@ class LogService
             $perPage = $request->input('take', 10);
             $description = $request->description ?? null;
             $user_id = $request->user_id ?? null;
+            $order = $request->input('order', 'ASC'); // Adicionando o parâmetro order, com valor padrão 'ASC'
 
             $logs = Log::with('user');
 
-            if (isset($search_term)) {
+            if (isset($description)) {
                 $logs->where('description', 'LIKE', "%{$description}%");
             }
 
@@ -35,9 +36,17 @@ class LogService
                 $logs->where('user_id', $user_id);
             }
 
+            // Verificar o valor de 'order' e ordenar os resultados
+            if ($order === 'DESC') {
+                $logs->orderBy('id', 'DESC');
+            } else {
+                $logs->orderBy('id', 'ASC'); // Caso o order não seja DESC, ordena de forma crescente (ASC)
+            }
+
             return $logs->paginate($perPage);
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
+
 }

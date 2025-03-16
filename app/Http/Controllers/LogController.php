@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ClientLog\LogService;
+use App\Services\Log\LogService;
 use Illuminate\Http\Request;
 
 class LogController extends Controller

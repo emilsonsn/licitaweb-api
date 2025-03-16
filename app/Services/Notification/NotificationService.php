@@ -5,6 +5,7 @@ namespace App\Services\Notification;
 use App\Models\Log;
 use App\Models\Notification;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -35,7 +36,7 @@ class NotificationService
             if (isset($search_term)) {
                 $notifications->where('description', 'LIKE', "%{$search_term}%");
             }
-            if(isset($viewed)){
+            if (isset($viewed)) {
                 $notifications->where('viewed', $viewed);
             }
 
@@ -99,7 +100,7 @@ class NotificationService
 
             $notificationToUpdate = Notification::find($status_id);
 
-            if (! $notificationToUpdate) {
+            if (!$notificationToUpdate) {
                 throw new Exception('Notificação não encontrada', 400);
             }
             $data = $validator->validated();
@@ -119,35 +120,50 @@ class NotificationService
         }
     }
 
-    public function viewed($id){
-        try{
+    public function viewed($id)
+    {
+        try {
             $notification = Notification::find($id);
 
-            if (! isset($notification)) {
+            if (!$notification) {
                 throw new Exception('Notificação não encontrada', 400);
             }
 
             $notificationDescription = $notification->description;
             $notification->viewed = true;
-            $notification->update();
+            $notification->save(); // Usando save() em vez de update()
 
+            // Logar o evento
             Log::create([
                 'description' => 'Visualizou uma notificação',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $notificationDescription]),
             ]);
 
-        } catch (Exception $error) {
+            return [
+                'status' => true,
+                'message' => 'Notificação marcada como visualizada.'
+            ];
 
+        } catch (Exception $error) {
+            // Logar o erro
+            Log::error('Erro ao visualizar notificação: ' . $error->getMessage());
+
+            return [
+                'status' => false,
+                'message' => 'Ocorreu um erro ao marcar a notificação como visualizada.'
+            ];
         }
     }
+
+
 
     public function delete($status_id)
     {
         try {
             $notification = Notification::find($status_id);
 
-            if (! isset($notification)) {
+            if (!isset($notification)) {
                 throw new Exception('Notificação não encontrada', 400);
             }
 
