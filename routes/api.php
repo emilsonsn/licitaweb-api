@@ -153,6 +153,7 @@ Route::middleware('jwt')->group(function () {
     Route::prefix('notification')->group(function () {
         Route::get('all', [NotificationController::class, 'all']);
         Route::get('search', [NotificationController::class, 'search']);
+        Route::get('viewed/{id}', [NotificationController::class, 'viewed']);
         Route::post('create', [NotificationController::class, 'create']);
         Route::patch('{id}', [NotificationController::class, 'update']);
         Route::delete('{id}', [NotificationController::class, 'delete']);

@@ -50,6 +50,17 @@ class NotificationController extends Controller
         return $this->response($result);
     }
 
+    public function viewed($id)
+    {
+        $result = $this->notificationService->viewed($id);
+
+        if ($result['status']) {
+            $result['message'] = 'Notificação visualizada com sucesso';
+        }
+
+        return $this->response($result);
+    }
+
     public function delete($id)
     {
         $result = $this->notificationService->delete($id);

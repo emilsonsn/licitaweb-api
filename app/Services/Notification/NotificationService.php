@@ -27,11 +27,16 @@ class NotificationService
         try {
             $perPage = $request->input('take', 10);
             $search_term = $request->search_term ?? null;
+            $viewed = $request->viewed ?? null;
+
 
             $notifications = Notification::query();
 
             if (isset($search_term)) {
                 $notifications->where('description', 'LIKE', "%{$search_term}%");
+            }
+            if(isset($viewed)){
+                $notifications->where('viewed', $viewed);
             }
 
             return $notifications->paginate($perPage);
@@ -111,6 +116,29 @@ class NotificationService
             return ['status' => true, 'data' => $notificationToUpdate];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => $error->getCode()];
+        }
+    }
+
+    public function viewed($id){
+        try{
+            $notification = Notification::find($id);
+
+            if (! isset($notification)) {
+                throw new Exception('Notificação não encontrada', 400);
+            }
+
+            $notificationDescription = $notification->description;
+            $notification->viewed = true;
+            $notification->update();
+
+            Log::create([
+                'description' => 'Deletou uma notificação',
+                'user_id' => Auth::user()->id,
+                'request' => json_encode(['name' => $notificationDescription]),
+            ]);
+
+        } catch (Exception $error) {
+
         }
     }
 
