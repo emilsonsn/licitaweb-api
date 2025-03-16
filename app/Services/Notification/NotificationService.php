@@ -132,7 +132,7 @@ class NotificationService
             $notification->update();
 
             Log::create([
-                'description' => 'Deletou uma notificação',
+                'description' => 'Visualizou uma notificação',
                 'user_id' => Auth::user()->id,
                 'request' => json_encode(['name' => $notificationDescription]),
             ]);
