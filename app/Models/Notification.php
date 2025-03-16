@@ -25,6 +25,7 @@ class Notification extends Model
         'user_id',
         'tender_id',
         'status',
+        'viewed',
     ];
 
     public function tender()

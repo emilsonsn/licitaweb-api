@@ -4,6 +4,7 @@ namespace App\Services\Client;
 
 use App\Models\Client;
 use App\Models\ClientAttachments;
+use App\Models\ClientLog;
 use App\Models\Log;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -38,20 +39,20 @@ class ClientService
             $clients = Client::with('user', 'attachments')->orderBy('id', 'desc');
 
             if (isset($search_term)) {
-                $clients->where(function($query) use ($search_term){
+                $clients->where(function ($query) use ($search_term) {
                     $query->where('name', 'LIKE', "%{$search_term}%")
-                    ->orWhere('cpf_cnpj', 'LIKE', "%{$search_term}%")
-                    ->orWhere('email', 'LIKE', "%{$search_term}%")
-                    ->orWhere('whatsapp', 'LIKE', "%{$search_term}%");
+                        ->orWhere('cpf_cnpj', 'LIKE', "%{$search_term}%")
+                        ->orWhere('email', 'LIKE', "%{$search_term}%")
+                        ->orWhere('whatsapp', 'LIKE', "%{$search_term}%");
                 });
             }
 
             if (isset($location)) {
-                $clients->where(function($query) use ($location){
+                $clients->where(function ($query) use ($location) {
                     $query->where('cep', 'LIKE', "%{$location}%")
-                    ->orWhere('state', 'LIKE', "%{$location}%")
-                    ->orWhere('city', 'LIKE', "%{$location}%")
-                    ->orWhere('address', 'LIKE', "%{$location}%");
+                        ->orWhere('state', 'LIKE', "%{$location}%")
+                        ->orWhere('city', 'LIKE', "%{$location}%")
+                        ->orWhere('address', 'LIKE', "%{$location}%");
                 });
             }
 
@@ -107,7 +108,7 @@ class ClientService
             if ($request->attachments) {
                 foreach ($request->attachments as $attachment) {
                     $path = $attachment->store('clients/attachments', 'public');
-                    $fullPath = 'storage/'.$path;
+                    $fullPath = 'storage/' . $path;
 
                     $attachments[] = ClientAttachments::create([
                         'client_id' => $client->id,
@@ -129,7 +130,7 @@ class ClientService
         }
     }
 
-    public function update($request, $user_id)
+    public function update($request, $client_id)
     {
         try {
             $rules = [
@@ -159,9 +160,9 @@ class ClientService
                 throw new Exception($validator->errors());
             }
 
-            $clientToUpdate = Client::find($user_id);
+            $clientToUpdate = Client::find($client_id);
 
-            if (! isset($clientToUpdate)) {
+            if (!isset($clientToUpdate)) {
                 throw new Exception('Cliente não encontrado');
             }
 
@@ -171,7 +172,7 @@ class ClientService
             if ($request->attachments) {
                 foreach ($request->attachments as $attachment) {
                     $path = $attachment->store('tenders/attachments', 'public');
-                    $fullPath = 'storage/'.$path;
+                    $fullPath = 'storage/' . $path;
 
                     $attachments[] = ClientAttachments::updateOrCreate(
                         [
@@ -181,6 +182,13 @@ class ClientService
                         ]);
                 }
             }
+
+            ClientLog::create([
+                'description' => 'Cliente foi atualizado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $client_id,
+                'request' => json_encode($request->all())
+            ]);
 
             Log::create([
                 'description' => 'Atualizou um cliente',
@@ -194,18 +202,18 @@ class ClientService
         }
     }
 
-    public function delete($id)
+    public function delete($id): array
     {
         try {
             $client = Client::find($id);
 
-            if (! $client) {
+            if (!$client) {
                 throw new Exception('Cliente não encontrado');
             }
 
             $clientAttachments = ClientAttachments::where('client_id', $client->id);
 
-            if($clientAttachments) {
+            if ($clientAttachments) {
                 $clientAttachments->delete();
             }
 
@@ -229,7 +237,7 @@ class ClientService
         try {
             $attachment = ClientAttachments::find($attachmentId);
 
-            if (! $attachment) {
+            if (!$attachment) {
                 throw new Exception('Anexo não encontrado');
             }
 
@@ -237,6 +245,13 @@ class ClientService
             $attachment->delete();
 
             $filename = $attachment->filename;
+
+            ClientLog::create([
+                'description' => 'Um arquivo vinculado ao cliente foi deletado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $attachment->client_id,
+                'request' => json_encode(['name' => $filename])
+            ]);
 
             Log::create([
                 'description' => 'Deletou um anexo de cliente',

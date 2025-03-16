@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientLogController;
 use App\Http\Controllers\ClientOccurrenceController;
 use App\Http\Controllers\CommitmentNoteController;
 use App\Http\Controllers\ContractController;
@@ -152,6 +153,7 @@ Route::middleware('jwt')->group(function () {
     Route::prefix('notification')->group(function () {
         Route::get('all', [NotificationController::class, 'all']);
         Route::get('search', [NotificationController::class, 'search']);
+        Route::get('viewed/{id}', [NotificationController::class, 'viewed']);
         Route::post('create', [NotificationController::class, 'create']);
         Route::patch('{id}', [NotificationController::class, 'update']);
         Route::delete('{id}', [NotificationController::class, 'delete']);
@@ -160,6 +162,11 @@ Route::middleware('jwt')->group(function () {
     Route::prefix('log')->group(function () {
         Route::get('all', [LogController::class, 'all']);
         Route::get('search', [LogController::class, 'search']);
+    });
+
+    Route::prefix('client-log')->group(function () {
+        Route::get('all', [ClientLogController::class, 'all']);
+        Route::get('search', [ClientLogController::class, 'search']);
     });
 
     Route::prefix('task')->group(function () {

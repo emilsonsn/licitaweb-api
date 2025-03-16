@@ -2,6 +2,7 @@
 
 namespace App\Services\Task;
 
+use App\Models\ClientLog;
 use App\Models\Log;
 use App\Models\TenderTask;
 use Exception;
@@ -91,6 +92,15 @@ class TaskService
 
             $task = TenderTask::create($data);
 
+            if(isset($request->client_id)){
+                ClientLog::create([
+                    'description' => 'Criou uma tarefa vinculado ao cliente',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $request->client_id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Criou um tarefa',
                 'user_id' => Auth::user()->id,
@@ -136,6 +146,15 @@ class TaskService
 
             $task->update($data);
 
+            if(isset($request->client_id)){
+                ClientLog::create([
+                    'description' => 'Criou uma tarefa vinculado ao cliente',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $request->client_id,
+                    'request' => json_encode($request->all())
+                ]);
+            }
+
             Log::create([
                 'description' => 'Atualizou um tarefa',
                 'user_id' => Auth::user()->id,
@@ -160,6 +179,15 @@ class TaskService
             $taskId = $task->id;
             $taskName = $task->name;
             $task->delete();
+
+            if(isset($task->client_id)){
+                ClientLog::create([
+                    'description' => 'Criou uma tarefa vinculado ao cliente',
+                    'user_id' => Auth::user()->id,
+                    'client_id' => $task->client_id,
+                    'request' => json_encode(['Nome' => $taskName])
+                ]);
+            }
 
             Log::create([
                 'description' => 'Apagou um tarefa',

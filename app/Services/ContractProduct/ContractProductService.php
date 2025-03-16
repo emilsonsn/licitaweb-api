@@ -2,6 +2,8 @@
 
 namespace App\Services\Contract;
 
+use App\Models\ClientLog;
+use App\Models\Contract;
 use App\Models\ContractProduct;
 use App\Models\Log;
 use Exception;
@@ -100,6 +102,19 @@ class ContractProductService
                 $item->delete();
             }
 
+            $contract = Contract::find($request->contract_id);
+
+            if (! $contract) {
+                throw new Exception('Contrato não encontrado');
+            }
+
+            ClientLog::create([
+                'description' => 'Produto de contrato vinculado ao cliente foi criado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $contract->client_id,
+                'request' => json_encode($request->all())
+            ]);
+
             Log::create([
                 'description' => 'Contrato criado',
                 'user_id' => Auth::user()->id,
@@ -121,7 +136,7 @@ class ContractProductService
 
             $rules = [
                 'product_id' => 'required|number',
-                'tender_id' => 'required|number',
+                'contract_id' => 'required|number',
                 'quantity' => 'required|number',
                 'sale_value' => 'required|decimal',
             ];
@@ -134,6 +149,19 @@ class ContractProductService
             }
 
             $contractProduct->update($validator->validated());
+
+            $contract = Contract::find($contractProduct->contract_id);
+
+            if (! $contract) {
+                throw new Exception('Contrato não encontrado');
+            }
+
+            ClientLog::create([
+                'description' => 'Produto de contrato vinculado ao cliente foi atualizado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $contract->client_id,
+                'request' => json_encode($request->all())
+            ]);
 
             Log::create([
                 'description' => 'Atualizou um produto do contrato',
@@ -159,6 +187,19 @@ class ContractProductService
 
             $contractProductId = $contractProduct->id;
             $contractProduct->delete();
+
+            $contract = Contract::find($contractProduct->contract_id);
+
+            if (! $contract) {
+                throw new Exception('Contrato não encontrado');
+            }
+
+            ClientLog::create([
+                'description' => 'Produto de contrato vinculado ao cliente foi deletado',
+                'user_id' => Auth::user()->id,
+                'client_id' => $contract->client_id,
+                'request' => json_encode(['id' => $contractProductId])
+            ]);
 
             Log::create([
                 'description' => 'Produto de contrato deletado',

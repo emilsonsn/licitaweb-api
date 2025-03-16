@@ -42,4 +42,9 @@ class Client extends Model
     public function attachments(){
         return $this->hasMany(ClientAttachments::class);
     }
+
+    public function logs()
+    {
+        return $this->hasMany(ClientLog::class);
+    }
 }

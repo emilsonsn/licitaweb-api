@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\Notification\NotificationService;
+use Exception;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -48,6 +49,21 @@ class NotificationController extends Controller
         }
 
         return $this->response($result);
+    }
+
+    public function viewed($id)
+    {
+        try {
+            $result = $this->notificationService->viewed($id);
+
+            if ($result['status']) {
+                $result['message'] = 'Notificação visualizada com sucesso';
+            }
+
+            return $this->response($result);
+        } catch (Exception $error) {
+            return response()->json(['error' => 'Ocorreu um erro ao marcar a notificação como visualizada.'], 500);
+        }
     }
 
     public function delete($id)

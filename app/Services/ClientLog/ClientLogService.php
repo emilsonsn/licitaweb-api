@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Services\Log;
+namespace App\Services\ClientLog;
 
-use App\Models\Log;
+use App\Models\ClientLog;
 use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class LogService
+class ClientLogService
 {
-    public function all()
+    public function all(): array
     {
         try {
-            $logs = Log::get();
+            $logs = ClientLog::get();
 
             return ['status' => true, 'data' => $logs];
         } catch (Exception $error) {
@@ -18,17 +19,17 @@ class LogService
         }
     }
 
-    public function search($request)
+    public function search($request): LengthAwarePaginator|array
     {
         try {
             $perPage = $request->input('take', 10);
             $description = $request->description ?? null;
             $user_id = $request->user_id ?? null;
-            $order = $request->input('order', 'ASC'); // Adicionando o parâmetro order, com valor padrão 'ASC'
+            $client_id = $request->client_id ?? null;
 
-            $logs = Log::with('user');
+            $logs = ClientLog::with('user', 'client');
 
-            if (isset($description)) {
+            if (isset($search_term)) {
                 $logs->where('description', 'LIKE', "%{$description}%");
             }
 
@@ -36,11 +37,8 @@ class LogService
                 $logs->where('user_id', $user_id);
             }
 
-            // Verificar o valor de 'order' e ordenar os resultados
-            if ($order === 'DESC') {
-                $logs->orderBy('id', 'DESC');
-            } else {
-                $logs->orderBy('id', 'ASC'); // Caso o order não seja DESC, ordena de forma crescente (ASC)
+            if (isset($client_id)) {
+                $logs->where('client_id', $client_id);
             }
 
             return $logs->paginate($perPage);
@@ -48,5 +46,4 @@ class LogService
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
-
 }
