@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Services\Log;
+namespace App\Services\ClientLog;
 
 use App\Models\ClientLog;
 use Exception;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class ClientLogService
 {
-    public function all()
+    public function all(): array
     {
         try {
             $logs = ClientLog::get();
@@ -18,7 +19,7 @@ class ClientLogService
         }
     }
 
-    public function search($request)
+    public function search($request): LengthAwarePaginator|array
     {
         try {
             $perPage = $request->input('take', 10);
