@@ -117,7 +117,7 @@ class ContractService
             if ($request->attachments) {
                 foreach ($request->attachments as $attachment) {
                     $path = $attachment->store('contract/attachments', 'public');
-                    $fullPath = 'storage/' . $path;
+                    $fullPath = $path;
 
                     $attachments[] = ContractFile::updateOrCreate(
                         [
