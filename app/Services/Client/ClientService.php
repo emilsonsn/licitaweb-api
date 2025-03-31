@@ -8,6 +8,7 @@ use App\Models\ClientLog;
 use App\Models\Log;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ClientService
@@ -35,42 +36,57 @@ class ClientService
             $flag = $request->flag ?? null;
             $user_id = $request->user_id ?? null;
             $location = $request->location ?? null;
+            $sortDirection = $request->input('sort_direction', 'desc'); // Direção da ordenação (ASC ou DESC)
 
-            $clients = Client::with('user', 'attachments')->orderBy('id', 'desc');
+            // Consulta com a subconsulta para pegar a data mais recente do client_log
+            $clients = Client::with('user', 'attachments')
+                ->leftJoin(
+                    DB::raw('(SELECT client_id, MAX(created_at) AS last_log_created_at FROM client_logs GROUP BY client_id) AS logs'),
+                    'clients.id', '=', 'logs.client_id'
+                )
+                ->orderBy('logs.last_log_created_at', $sortDirection)  // Ordena pela data do log mais recente
+                ->orderBy('clients.id', 'desc'); // Ordena por ID como fallback
 
+            // Filtro por termos de pesquisa
             if (isset($search_term)) {
                 $clients->where(function ($query) use ($search_term) {
-                    $query->where('name', 'LIKE', "%{$search_term}%")
-                        ->orWhere('cpf_cnpj', 'LIKE', "%{$search_term}%")
-                        ->orWhere('email', 'LIKE', "%{$search_term}%")
-                        ->orWhere('whatsapp', 'LIKE', "%{$search_term}%");
+                    $query->where('clients.name', 'LIKE', "%{$search_term}%")
+                        ->orWhere('clients.cpf_cnpj', 'LIKE', "%{$search_term}%")
+                        ->orWhere('clients.email', 'LIKE', "%{$search_term}%")
+                        ->orWhere('clients.whatsapp', 'LIKE', "%{$search_term}%");
                 });
             }
 
+            // Filtro por localização
             if (isset($location)) {
                 $clients->where(function ($query) use ($location) {
-                    $query->where('cep', 'LIKE', "%{$location}%")
-                        ->orWhere('state', 'LIKE', "%{$location}%")
-                        ->orWhere('city', 'LIKE', "%{$location}%")
-                        ->orWhere('address', 'LIKE', "%{$location}%");
+                    $query->where('clients.cep', 'LIKE', "%{$location}%")
+                        ->orWhere('clients.state', 'LIKE', "%{$location}%")
+                        ->orWhere('clients.city', 'LIKE', "%{$location}%")
+                        ->orWhere('clients.address', 'LIKE', "%{$location}%");
                 });
             }
 
+            // Filtro por flag
             if (isset($flag)) {
-                $clients->where('flag', $flag);
+                $clients->where('clients.flag', $flag);
             }
 
+            // Filtro por user_id
             if (isset($user_id)) {
-                $clients->where('user_id', $user_id);
+                $clients->where('clients.user_id', $user_id);
             }
 
-            $clients = $clients->paginate($perPage);
+            // Paginação
+            $clients = $clients->select('clients.*')  // Seleciona apenas as colunas da tabela clients
+            ->paginate($perPage);
 
             return $clients;
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
     }
+
 
     public function create($request)
     {
