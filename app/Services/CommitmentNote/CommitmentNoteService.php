@@ -55,6 +55,7 @@ class CommitmentNoteService
         try {
             $rules = [
                 'contract_id' => ['required', 'integer', 'exists:contracts,id'],
+                'status_id' => ['required', 'integer', 'exists:commitment_notes_status,id'],
                 'number' => ['required', 'string', 'max:255'],
                 'receipt_date' => ['required', 'date'],
                 'purchase_term' => ['required', 'date'],
@@ -66,13 +67,14 @@ class CommitmentNoteService
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
-                throw new Exception($validator->errors(), 400);                
+                throw new Exception($validator->errors(), 400);
             }
 
             $validatedData = $validator->validated();
 
             $commitmentNote = CommitmentNote::create([
                 'contract_id' => $validatedData['contract_id'],
+                'status_id' => $validatedData['status_id'],
                 'number' => $validatedData['number'],
                 'receipt_date' => $validatedData['receipt_date'],
                 'purchase_term' => $validatedData['purchase_term'],
@@ -97,6 +99,7 @@ class CommitmentNoteService
         try {
             $rules = [
                 'contract_id' => ['required', 'integer', 'exists:contracts,id'],
+                'status_id' => ['required', 'integer', 'exists:commitment_notes_status,id'],
                 'number' => ['required', 'string', 'max:255'],
                 'receipt_date' => ['required', 'date'],
                 'purchase_term' => ['required', 'date'],
@@ -121,6 +124,7 @@ class CommitmentNoteService
 
             $commitmentNote->update([
                 'contract_id' => $validatedData['contract_id'],
+                'status_id' => $validatedData['status_id'],
                 'number' => $validatedData['number'],
                 'receipt_date' => $validatedData['receipt_date'],
                 'purchase_term' => $validatedData['purchase_term'],

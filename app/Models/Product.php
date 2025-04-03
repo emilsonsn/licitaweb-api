@@ -49,4 +49,21 @@ class Product extends Model
     {
         return $this->hasMany(TenderProduct::class);
     }
+
+    public function contract_products()
+    {
+        return $this->hasMany(ContractProduct::class);
+    }
+
+    public function contracts()
+{
+    return $this->hasManyThrough(
+        Contract::class,
+        ContractProduct::class,
+        'product_id',
+        'id',
+        'id',
+        'contract_id'
+    );
+}
 }

@@ -31,6 +31,7 @@ class Contract extends Model
         'payment_conditions',
         'outstanding_balance',
         'observations',
+        'changed_product',
     ];
 
     public function client()
