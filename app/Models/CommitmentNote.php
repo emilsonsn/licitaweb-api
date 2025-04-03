@@ -20,6 +20,7 @@ class CommitmentNote extends Model
 
     public $fillable = [
         'contract_id',
+        'status_id',
         'number',
         'receipt_date',
         'purchase_term',

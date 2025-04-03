@@ -2,7 +2,11 @@
 
 namespace App\Services\Product;
 
+use App\Models\Contract;
+use App\Models\ContractPayment;
+use App\Models\ContractProduct;
 use App\Models\Log;
+use App\Models\Notification;
 use App\Models\Product;
 use App\Models\ProductFile;
 use App\Models\ProductOccurrence;
@@ -49,26 +53,39 @@ class ProductService
     {
         try {
             $product_id = $request->input('id');
+            $cost = $request->input('cost');
             $perPage = $request->input('take', 10);
-            $search_term = $request->search_term ?? null;
+            $search_term = $request->input('search_term', null);
+
+            if (!$product_id) {
+                return response()->json([
+                    'status' => false,
+                    'error' => 'Id de produto obrigatório'
+                ], 400);
+            }
 
             $products = ProductOccurrence::query();
 
-            if (!$product_id) {
-                throw new Exception('Id de produto obrigatorio', 400);
+            if ($cost) {
+                $products->where('title', '=', 'Alteração de custo de aquisição');
             }
 
             $products->where('product_id', $product_id);
 
-            if (isset($search_term)) {
-                $products->where('name', 'LIKE', "%{$search_term}%")
-                    ->orWhere('sku', 'LIKE', "%{$search_term}%")
-                    ->orWhere('category', 'LIKE', "%{$search_term}%");
+            if (!empty($search_term)) {
+                $products->where(function ($query) use ($search_term) {
+                    $query->where('name', 'LIKE', "%{$search_term}%")
+                        ->orWhere('sku', 'LIKE', "%{$search_term}%")
+                        ->orWhere('category', 'LIKE', "%{$search_term}%");
+                });
             }
 
             return $products->paginate($perPage);
         } catch (Exception $error) {
-            return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
+            return response()->json([
+                'status' => false,
+                'error' => $error->getMessage()
+            ], 500);
         }
     }
 
@@ -178,6 +195,8 @@ class ProductService
                     'description' => $user->name . ' alterou o valor de custo de ' . $product->purchase_cost . ' para ' . $request->purchase_cost,
                     'product_id' => $product_id
                 ]);
+
+                $updatedContracts = $this->calcContracts($product_id);
             }
 
             $product->update($validator->validated());
@@ -204,7 +223,13 @@ class ProductService
                 'request' => json_encode($request->all()),
             ]);
 
-            return ['status' => true, 'data' => $product];
+            return [
+                'status' => true,
+                'data' => [
+                    'product' => $product,
+                    'updatedContracts' => $updatedContracts
+                ]
+            ];
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => $error->getCode()];
         }
@@ -259,5 +284,46 @@ class ProductService
         } catch (Exception $error) {
             return ['status' => false, 'error' => $error->getMessage(), 'statusCode' => 400];
         }
+    }
+
+    private function calcContracts($product_id)
+    {
+        $product = Product::findOrFail($product_id);
+        $contracts = $product->contracts;
+        $updatedContracts = [];
+
+        foreach ($contracts as $contract) {
+            $contract->changed_product = true;
+            $contract->save();
+
+            $contractProduct = ContractProduct::where('contract_id', $contract->id)
+                ->where('product_id', $product_id)
+                ->first();
+
+            if ($contractProduct) {
+                $oldSaleValue = $contractProduct->sale_value;
+                $newSaleValue = $product->sale_price;
+
+                if (($newSaleValue * $product->quantity) > ($oldSaleValue * $product->quantity)) {
+                    $contractProduct->sale_value = $newSaleValue;
+                    $contractProduct->save();
+
+                    $updatedContracts[] = [
+                        'contract_number' => $contract->contract_number,
+                        'old_sale_value' => $oldSaleValue,
+                        'new_sale_value' => $newSaleValue,
+                    ];
+
+                    Notification::create([
+                        'description' => 'Vencimento Próximo',
+                        'message' => 'Valor de produto alterado para o contrato ' . $contractProduct->contract_number,
+                        'user_id' => $note->contract->user_id ?? null,
+                        'contract_id' => $contractProduct->id
+                    ]);
+                }
+            }
+        }
+
+        return $updatedContracts;
     }
 }

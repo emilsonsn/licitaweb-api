@@ -350,7 +350,7 @@ class ContractService
             $contractProduct->delete();
 
             ClientLog::create([
-                'description' => 'Prodito de contrato vinculado ao cliente foi deletado',
+                'description' => 'Produto de contrato vinculado ao cliente foi deletado',
                 'user_id' => Auth::user()->id,
                 'client_id' => $contract->client_id,
                 'request' => json_encode(['product name' => $contractProductName])

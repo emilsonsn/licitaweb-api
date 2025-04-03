@@ -10,7 +10,9 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void {}
+    protected function schedule(Schedule $schedule): void {
+        $schedule->command('check:purchase-term')->dailyAt('00:00');
+    }
 
     /**
      * Register the commands for the application.
