@@ -150,6 +150,14 @@ Route::middleware('jwt')->group(function () {
         Route::delete('{id}', [StatusController::class, 'delete']);
     });
 
+    Route::prefix('notes-status')->group(function () {
+        Route::get('all', [StatusController::class, 'all']);
+        Route::get('search', [StatusController::class, 'search']);
+        Route::post('create', [StatusController::class, 'create']);
+        Route::patch('{id}', [StatusController::class, 'update']);
+        Route::delete('{id}', [StatusController::class, 'delete']);
+    });
+
     Route::prefix('notification')->group(function () {
         Route::get('all', [NotificationController::class, 'all']);
         Route::get('search', [NotificationController::class, 'search']);
