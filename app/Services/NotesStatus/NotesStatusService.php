@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Status;
+namespace App\Services\NotesStatus;
 
 use App\Models\Log;
 use App\Models\NotesStatus;

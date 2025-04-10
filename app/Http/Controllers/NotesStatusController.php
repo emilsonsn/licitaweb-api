@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\Status\NotesStatusService;
+use App\Services\NotesStatus\NotesStatusService;
 use Illuminate\Http\Request;
 
 class NotesStatusController extends Controller
