@@ -9,6 +9,7 @@ use App\Http\Controllers\ContractController;
 use App\Http\Controllers\contractProductController;
 use App\Http\Controllers\LogController;
 use App\Http\Controllers\ModalityController;
+use App\Http\Controllers\NotesStatusController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductOccurrenceController;
@@ -151,11 +152,11 @@ Route::middleware('jwt')->group(function () {
     });
 
     Route::prefix('notes-status')->group(function () {
-        Route::get('all', [StatusController::class, 'all']);
-        Route::get('search', [StatusController::class, 'search']);
-        Route::post('create', [StatusController::class, 'create']);
-        Route::patch('{id}', [StatusController::class, 'update']);
-        Route::delete('{id}', [StatusController::class, 'delete']);
+        Route::get('all', [NotesStatusController::class, 'all']);
+        Route::get('search', [NotesStatusController::class, 'search']);
+        Route::post('create', [NotesStatusController::class, 'create']);
+        Route::patch('{id}', [NotesStatusController::class, 'update']);
+        Route::delete('{id}', [NotesStatusController::class, 'delete']);
     });
 
     Route::prefix('notification')->group(function () {
